@@ -38,6 +38,10 @@ public class VisionSubsystem extends SubsystemBase {
             visionSim.addAprilTags(Constants.VisionConstants.APRIL_TAG_FIELD_LAYOUT);
         }
 
+        setupCameras();
+    }
+
+    private void setupCameras() {
         for (Class<?> limelightConfig : Constants.VisionConstants.class.getDeclaredClasses()) {
             String limelightName;
             try {
@@ -82,9 +86,9 @@ public class VisionSubsystem extends SubsystemBase {
                             average_latency_std_devs, effectiveRange,
                             visionSim));
 
-                    System.out.println("Limelight with name " + limelightName + " is enabled");
+                    System.out.println("Camera with name " + limelightName + " is enabled");
                 } else {
-                    System.out.println("Limelight with name " + limelightName + " is not enabled");
+                    System.out.println("Camera with name " + limelightName + " is not enabled");
                 }
 
             } catch (Exception e) {
