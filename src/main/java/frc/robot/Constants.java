@@ -246,11 +246,14 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final double ROBOT_YAW_SPEED_LIMIT = 360; // Degrees per second
     public static final boolean USE_WELDED_FIELD = false;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
-    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.01, 0.01, 0.01); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.25, 0.25, 0.35); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.15, 0.15, 0.2); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 90; // The higher this is the less that far targets increase the std devs
+    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot moving increases the std devs
+    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot turning increases the std devs
+    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 4; // The higher this is the less that a low number of targets increases the std devs
 
     public static class Limelight_4 {
       public static final String NAME = "Limelight 4";
@@ -260,7 +263,19 @@ public final class Constants {
       public static final double HEIGHT_OFFSET = 2.95276; // Feet
       public static final double ROLL = 0; // Degrees
       public static final double PITCH = 0; // Degrees
-      public static final double YAW = -20; // Degrees
+      public static final double YAW = 20; // Degrees
+      public static final double EFFECTIVE_RANGE = 5; // Meters
+
+      public static class CameraProperties {
+        public static final int WIDTH = 1280; // Pixels
+        public static final int HEIGHT = 800; // Pixels
+        public static final int FPS = 120;
+        public static final double DIAGONAL_FOV = 91.12; // Degrees
+        public static final double AVERGAGE_PIXEL_ERROR = 0.25;
+        public static final double AVERGAGE_PIXEL_ERROR_STD_DEVS = 0.05;
+        public static final double AVERAGE_LATENCY = 15; // Miliseconds
+        public static final double AVERAGE_LATENCY_STD_DEVS = 0.1;
+      }
     }
   }
 

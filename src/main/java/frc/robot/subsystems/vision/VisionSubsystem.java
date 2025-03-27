@@ -18,11 +18,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.utilities.JsonUtilities;
 import frc.robot.utilities.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    private AHRS navx;
+    public AHRS navx;
 
     private List<VisionCamera> limelightCameras = new ArrayList<>();
 
@@ -56,9 +57,29 @@ public class VisionSubsystem extends SubsystemBase {
                             Units.degreesToRadians(
                                     (double) limelightConfig.getDeclaredField("YAW").get(null)));
 
-                    System.out.println(limelightRelativeRotation.toString());
+                    double effectiveRange = Units
+                            .feetToMeters((double) limelightConfig.getDeclaredField("EFFECTIVE_RANGE").get(null));
+
+                    Class<?> cameraProperties = JsonUtilities.getInnerClass(limelightConfig, "CameraProperties");
+
+                    int width = (int) cameraProperties.getDeclaredField("WIDTH").get(null);
+                    int height = (int) cameraProperties.getDeclaredField("HEIGHT").get(null);
+                    int fps = (int) cameraProperties.getDeclaredField("FPS").get(null);
+                    double diagonal_fov = (double) cameraProperties.getDeclaredField("DIAGONAL_FOV").get(null);
+
+                    double average_pixel_error = (double) cameraProperties.getDeclaredField("AVERGAGE_PIXEL_ERROR")
+                            .get(null);
+                    double average_pixel_error_std_devs = (double) cameraProperties
+                            .getDeclaredField("AVERGAGE_PIXEL_ERROR_STD_DEVS").get(null);
+
+                    double average_latency = (double) cameraProperties.getDeclaredField("AVERAGE_LATENCY").get(null);
+                    double average_latency_std_devs = (double) cameraProperties
+                            .getDeclaredField("AVERAGE_LATENCY_STD_DEVS").get(null);
+
                     limelightCameras.add(new VisionCamera(limelightName,
-                            new Transform3d(limelightRelativePosition, limelightRelativeRotation),
+                            new Transform3d(limelightRelativePosition, limelightRelativeRotation), width, height, fps,
+                            diagonal_fov, average_pixel_error, average_pixel_error_std_devs, average_latency,
+                            average_latency_std_devs, effectiveRange,
                             visionSim));
 
                     System.out.println("Limelight with name " + limelightName + " is enabled");
@@ -73,25 +94,27 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-        if (Robot.isSimulation()) {
-            RobotContainer.swerveSubsystem.swerveDrive.getSimulationDriveTrainPose().ifPresent(pose -> {
-                visionSim.update(pose);
-            });
-            
-        }
+    public void simulationPeriodic() {
+        // Update the vision simulation with the exact robot pose from the drive train
+        // simulation
+        RobotContainer.swerveSubsystem.swerveDrive.getSimulationDriveTrainPose().ifPresent(pose -> {
+            visionSim.update(pose);
+        });
+    }
 
+    @Override
+    public void periodic() {
         for (var camera : limelightCameras) {
             var visionEstimate = camera.updateVision();
 
             visionEstimate.ifPresent(
-                est -> {
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = camera.getEstimationStdDevs();
+                    est -> {
+                        // Change our trust in the measurement based on the tags we can see
+                        var estStdDevs = camera.getEstimationStdDevs();
 
-                    RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                });
+                        RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(
+                                est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                    });
         }
     }
 }

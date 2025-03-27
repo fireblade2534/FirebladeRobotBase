@@ -66,7 +66,7 @@ public class JsonUtilities {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
 
-    private static Class<?> getInnerClass(Class<?> parentClass, String className) {
+    public static Class<?> getInnerClass(Class<?> parentClass, String className) {
         try {
             return Class.forName(parentClass.getName() + "$" + className);
         } catch (ClassNotFoundException e) {

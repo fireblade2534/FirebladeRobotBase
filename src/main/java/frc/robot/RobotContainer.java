@@ -25,7 +25,7 @@ public class RobotContainer {
   public static final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.swerveDrive,
       () -> driverController.getForwardAxis(),
       () -> driverController.getRightAxis())
-      .withControllerRotationAxis(() -> driverController.getRotationAxis() * Constants.DriverConstants.ROTATION_SCALE)
+      .withControllerRotationAxis(() -> -driverController.getRotationAxis() * Constants.DriverConstants.ROTATION_SCALE)
       .deadband(Math.pow(Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT))
       .scaleTranslation(Constants.DriverConstants.TRANSLATION_SCALE)
       .allianceRelativeControl(true);;
@@ -36,7 +36,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    if (Constants.AdvantageKitConstants.SIMMODE == Constants.AdvantageKitConstants.RobotMode.SIM) {
+    if (Robot.isSimulation()) {
       visionSubsystem.visionSim.getDebugField();
     }
   }
