@@ -9,7 +9,6 @@ import org.photonvision.simulation.VisionSystemSim;
 
 import com.studica.frc.AHRS;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -19,13 +18,12 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utilities.JsonUtilities;
-import frc.robot.utilities.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
 
     public AHRS navx;
 
-    private List<VisionCamera> limelightCameras = new ArrayList<>();
+    public List<VisionCamera> limelightCameras = new ArrayList<>();
 
     public VisionSystemSim visionSim;
 

@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.util.function.Supplier;
 
+import com.studica.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -79,20 +81,38 @@ public class SwerveSubsystem extends SubsystemBase {
         FileUtilities.writeFile("swerve/swervedrive.json", swerveDrive);
     }
 
-    public void driveFieldOriented(ChassisSpeeds velocity)
-    {
+    public void driveFieldOriented(ChassisSpeeds velocity) {
         swerveDrive.driveFieldOriented(velocity);
     }
 
-    public Command driveFieldOrientedSupplier(Supplier<ChassisSpeeds> velocity)
-    {
+    public Command driveFieldOrientedSupplier(Supplier<ChassisSpeeds> velocity) {
         return run(() -> {
         swerveDrive.driveFieldOriented(velocity.get());
         });
     }
 
+    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+        swerveDrive.setChassisSpeeds(chassisSpeeds);
+    }
+    
+    public void resetOdometry(Pose2d initialHolonomicPose) {
+        swerveDrive.resetOdometry(initialHolonomicPose);
+    }
+
+    public ChassisSpeeds getRobotVelocity() {
+        return swerveDrive.getRobotVelocity();
+    }
+
+    public Pose2d getPose() {
+        return swerveDrive.getPose();
+    }
+
+    public AHRS getGyro() {
+        return (AHRS) swerveDrive.getGyro().getIMU();
+    }
+
     @Override
-    public void periodic(){
+    public void periodic() {
         swerveDrive.updateOdometry();
     }
 }

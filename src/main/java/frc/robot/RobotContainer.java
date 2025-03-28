@@ -4,9 +4,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import frc.robot.subsystems.PathfindingSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.Controller;
@@ -16,8 +21,8 @@ public class RobotContainer {
 
   // Initalize public subsystems
   public static final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-
   public static final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  public static final PathfindingSubsystem pathfindingSubsystem = new PathfindingSubsystem();
 
   // Initalize driver controller and stream
   public static final Controller driverController = new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT);
@@ -36,11 +41,22 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
+    configureAutos();
+
     if (Robot.isSimulation()) {
       visionSubsystem.visionSim.getDebugField();
     }
+
+    PathfindingCommand.warmupCommand().schedule();
   }
 
+  private void configureAutos(){
+    // Build an auto chooser. This will use Commands.none() as the default option.
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
+  
   private void configureBindings() {
     Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveFieldOrientedSupplier(driveAngularVelocity);
 

@@ -248,9 +248,9 @@ public final class Constants {
   public static class VisionConstants {
     public static final boolean USE_WELDED_FIELD = false;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
-    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.25, 0.25, 0.35); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.15, 0.15, 0.2); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 90; // The higher this is the less that far targets increase the std devs
+    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.45); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.2, 0.2, 0.2); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 100; // The higher this is the less that far targets increase the std devs
     public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot moving increases the std devs
     public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot turning increases the std devs
     public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 4; // The higher this is the less that a low number of targets increases the std devs

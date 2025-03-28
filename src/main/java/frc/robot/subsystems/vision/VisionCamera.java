@@ -34,12 +34,14 @@ public class VisionCamera {
     private Transform3d cameraOffset;
     private PhotonPoseEstimator photonPoseEstimator;
     private Matrix<N3, N1> currentStdDevs;
-
     // Camera properties
     private double effectiveRange;
 
     // Simulation
     private PhotonCameraSim cameraSim;
+
+    // SmartDashboard
+    private EstimatedRobotPose latestEstimatedPose;
 
     public VisionCamera(String cameraName, Transform3d cameraOffset, int width, int height, int fps,
             double diagonal_fov, double average_pixel_error, double average_pixel_error_std_devs,
@@ -75,16 +77,7 @@ public class VisionCamera {
             updateEstimationStdDevs(robotEstimate, result.getTargets());
         }
         robotEstimate.ifPresent(est -> {
-            Pose3d estPose = est.estimatedPose;
-            SmartDashboard.putNumberArray("PhotonVision/" + cameraName + "/Robot Estimate", new double[] {
-                    estPose.getX(),
-                    estPose.getY(),
-                    estPose.getZ(),
-                    estPose.getRotation().getQuaternion().getW(),
-                    estPose.getRotation().getQuaternion().getX(),
-                    estPose.getRotation().getQuaternion().getY(),
-                    estPose.getRotation().getQuaternion().getZ()
-            });
+            latestEstimatedPose = est;
         });
         return robotEstimate;
     }
@@ -139,20 +132,20 @@ public class VisionCamera {
             currentStdDevs = temporaryStdDevs;
         }
 
-        if (Constants.DebugConstants.DEBUG_VISION == true) {
-            SmartDashboard.putNumberArray("PhotonVision/" + cameraName + "/Current Std Deviations",
-                    currentStdDevs.getData());
-        }
-
     }
 
-    /**
-     * Returns the latest standard deviations of the estimated pose from {@link
-     * #getEstimatedGlobalPose()}, for use with {@link
-     * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-     * SwerveDrivePoseEstimator}. This should
-     * only be used when there are targets visible.
-     */
+    public String getCameraName() {
+        return cameraName;
+    }
+
+    public PhotonCamera getCamera() {
+        return camera;
+    }
+
+    public EstimatedRobotPose getLatestEstimatedPose() {
+        return latestEstimatedPose;
+    }
+
     public Matrix<N3, N1> getEstimationStdDevs() {
         return currentStdDevs;
     }

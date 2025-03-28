@@ -33,10 +33,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    System.out.println("Starting autonomous");
     m_autonomousCommand = robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
+    } else {
+      System.out.println("Canceled autonomous: No auto selected");
     }
   }
 
@@ -44,7 +47,9 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    System.out.println("Finished autonomous");
+  }
 
   @Override
   public void teleopInit() {
