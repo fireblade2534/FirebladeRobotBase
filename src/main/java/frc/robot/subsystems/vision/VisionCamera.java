@@ -33,7 +33,7 @@ public class VisionCamera {
     private String cameraName;
     private Transform3d cameraOffset;
     private PhotonPoseEstimator photonPoseEstimator;
-    private Matrix<N3, N1> currentStdDevs;
+    private Matrix<N3, N1> currentStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
     // Camera properties
     private double effectiveRange;
 
@@ -41,7 +41,7 @@ public class VisionCamera {
     private PhotonCameraSim cameraSim;
 
     // SmartDashboard
-    private EstimatedRobotPose latestEstimatedPose;
+    private Optional<EstimatedRobotPose> latestEstimatedPose = Optional.empty();
 
     public VisionCamera(String cameraName, Transform3d cameraOffset, int width, int height, int fps,
             double diagonal_fov, double average_pixel_error, double average_pixel_error_std_devs,
@@ -51,7 +51,7 @@ public class VisionCamera {
         this.cameraOffset = cameraOffset;
         this.effectiveRange = effectiveRange;
 
-        photonPoseEstimator = new PhotonPoseEstimator(Constants.VisionConstants.APRIL_TAG_FIELD_LAYOUT,
+        photonPoseEstimator = new PhotonPoseEstimator(Constants.APRIL_TAG_FIELD_LAYOUT,
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
 
         if (Robot.isSimulation()) {
@@ -77,7 +77,7 @@ public class VisionCamera {
             updateEstimationStdDevs(robotEstimate, result.getTargets());
         }
         robotEstimate.ifPresent(est -> {
-            latestEstimatedPose = est;
+            latestEstimatedPose = Optional.ofNullable(est);
         });
         return robotEstimate;
     }
@@ -90,7 +90,8 @@ public class VisionCamera {
             Translation3d estimatedTranslation = estimatedPose.get().estimatedPose.getTranslation();
             Matrix<N3, N1> temporaryStdDevs = Constants.VisionConstants.VISION_SINGLE_TAG_STD_DEVS;
             int validTargets = 0;
-            double averageDistance = 0;
+            double averageDistance, averageAmbiguity;
+            averageDistance = averageAmbiguity = 0;
 
             for (var target : targets) {
                 Optional<Pose3d> targetPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
@@ -99,10 +100,12 @@ public class VisionCamera {
                 }
 
                 validTargets++;
+                averageAmbiguity += target.getPoseAmbiguity();
                 averageDistance += targetPose.get().getTranslation().getDistance(estimatedTranslation);
             }
 
             averageDistance /= validTargets;
+            averageAmbiguity /= validTargets;
 
             if (validTargets > 1) {
                 temporaryStdDevs = Constants.VisionConstants.VISION_MULTI_TAG_STD_DEVS;
@@ -125,8 +128,10 @@ public class VisionCamera {
                 double targetCountMultiplier = Math.max(
                         ((2 / validTargets) / Constants.VisionConstants.TARGET_COUNT_STD_DEVS_DIVISOR - 0.2), -0.2);
 
-                temporaryStdDevs = temporaryStdDevs.times(1 + distanceMultiplier + translationVelocityMultiplier
-                        + rotationalVelocityMultiplier + targetCountMultiplier);
+                double targetAmbiguity = averageAmbiguity / Constants.VisionConstants.TARGET_AMBIGUITY_STD_DEVS_DIVISOR;
+
+                temporaryStdDevs = temporaryStdDevs.times(1 + ((distanceMultiplier + translationVelocityMultiplier
+                        + rotationalVelocityMultiplier + targetCountMultiplier + targetAmbiguity) * Constants.VisionConstants.OVERALL_MULTIPLIER));
             }
 
             currentStdDevs = temporaryStdDevs;
@@ -142,7 +147,7 @@ public class VisionCamera {
         return camera;
     }
 
-    public EstimatedRobotPose getLatestEstimatedPose() {
+    public Optional<EstimatedRobotPose> getLatestEstimatedPose() {
         return latestEstimatedPose;
     }
 

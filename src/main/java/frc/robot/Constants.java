@@ -10,8 +10,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -226,8 +230,11 @@ public final class Constants {
     public static final double MASS = 115; // Pounds
     public static final double WIDTH = 2.58333333; // Feet
     public static final double LENGTH = 3.41666667; // Feet
-    public static final double MAX_SPEED = 24; // Feet/Seconds
-    public static final double MAX_ACHIEVABLE_SPEED = 24; // Feet/Seconds
+    public static final double MAX_SPEED = 24; // Feet/Second
+    public static final double MAX_ACHIEVABLE_SPEED = 24; // Feet/Second
+    public static final double MAX_ACCELERATION = 9.84252; // Feet/Second
+    public static final double MAX_ANGULAR_VELOCITY = 540; // Degrees/Second
+    public static final double MAX_ANGULAR_ACCELERATION = 720; // Degrees/Second
     public static final double MOI = 6.883;
     public static final String DRIVE_MOTOR_TYPE = "NEO";
 
@@ -243,17 +250,22 @@ public final class Constants {
     public static final double TRANSLATION_SCALE = 1;
     public static final double ROTATION_SCALE = 1;
     public static final int CONTROL_EXPONENT = 2;
+    public static final double CONTROL_STAGE1_SPEED = 1; // Feet/Second
+    public static final double CONTROL_STAGE2_SPEED = 1; // Feet/Second
   }
 
+  public static final boolean USE_WELDED_FIELD = false;
+  public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
+
   public static class VisionConstants {
-    public static final boolean USE_WELDED_FIELD = false;
-    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
-    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.45); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.2, 0.2, 0.2); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 100; // The higher this is the less that far targets increase the std devs
-    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot moving increases the std devs
-    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 150; // The higher this is the less that the robot turning increases the std devs
-    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 4; // The higher this is the less that a low number of targets increases the std devs
+    public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 0.6); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.3); // The standard deviations of our vision estimated poses, which affect correction rate
+    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 70; // The higher this is the less that far targets increase the std devs
+    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 90; // The higher this is the less that the robot moving increases the std devs
+    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 90; // The higher this is the less that the robot turning increases the std devs
+    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 5; // The higher this is the less that a low number of targets increases the std devs
+    public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 2; // The higher this is the less that a high average ambiguty increases the std devs
+    public static final double OVERALL_MULTIPLIER = 1;
 
     public static class Limelight_4 {
       public static final String NAME = "Limelight 4";
@@ -263,7 +275,7 @@ public final class Constants {
       public static final double HEIGHT_OFFSET = 2.95276; // Feet
       public static final double ROLL = 0; // Degrees
       public static final double PITCH = 0; // Degrees
-      public static final double YAW = 20; // Degrees
+      public static final double YAW = 28; // Degrees
       public static final double EFFECTIVE_RANGE = 5; // Meters
 
       public static class CameraProperties {
@@ -279,7 +291,61 @@ public final class Constants {
     }
   }
 
+  public static class ReefConstants {
+      public static class FieldConstants {
+          public static final int[] BLUE_ALLIANCE_REEF_TAG_IDS = {21, 22, 17, 18, 19, 20};
+          public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
+      }
+
+      public static class AlignConstants {
+          public static final Transform2d alignOffset = new Transform2d(new Translation2d(1, 0), new Rotation2d(Units.degreesToRadians(180)));
+      }
+  }
+
+  public static class ElevatorConstants {
+    public static class Stage1 {
+      public static int ID = 3;
+      public static double MAX_VELOCITY = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 120; // Not sure the unit
+      public static double P = 65;
+      public static double I = 0;
+      public static double D = 1.2;
+      public static double S = 0.05; // Volts
+      public static double G = 1.3; // Volts
+      public static double V = 17; // Volts/(Meters/Second)
+      public static double A = 0.2; // Volts/(Meters/Second^2) 
+      public static double MASS = 50; // Pounds
+      public static double DRUM_RADIUS = 0.98110236; // Inches
+      public static double GEAR_RATIO = 18.5714;
+      public static double HARD_MAX_HEIGHT = 2.4; // Feet
+    }
+
+    public static class Stage2 {
+      public static int ID = 2;
+      public static double MAX_VELOCITY = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 120; // Not sure the unit
+      public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
+      public static double P = 65;
+      public static double I = 0;
+      public static double D = 1.2;
+      public static double S = 0.05; // Volts
+      public static double G = 0.6; // Volts
+      public static double V = 14.52; // Volts/(Meters/Second)
+      public static double A = 0.04; // Volts/(Meters/Second^2) 
+      public static double MASS = 22.0462; // Pounds
+      public static double DRUM_RADIUS = 0.98110236; // Inches
+      public static double GEAR_RATIO = 15.7143;
+      public static double HARD_MAX_HEIGHT = 1.65; // Feet
+    }
+
+    public static class Shoulder {
+      
+    }
+  }
+
   public static class DebugConstants {
     public static boolean DEBUG_VISION = true;
+    public static boolean DEBUG_ELEVATOR = true;
+    public static boolean ANIMATE_ROBOT = true;
   }
 }

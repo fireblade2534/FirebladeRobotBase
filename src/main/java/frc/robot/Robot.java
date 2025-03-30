@@ -53,6 +53,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    RobotContainer.elevatorSubsystem.resetStage1Setpoint();
+    RobotContainer.elevatorSubsystem.resetStage2Setpoint();
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

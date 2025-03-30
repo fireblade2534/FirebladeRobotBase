@@ -33,7 +33,7 @@ public class VisionSubsystem extends SubsystemBase {
         if (Robot.isSimulation()) {
 
             visionSim = new VisionSystemSim("main");
-            visionSim.addAprilTags(Constants.VisionConstants.APRIL_TAG_FIELD_LAYOUT);
+            visionSim.addAprilTags(Constants.APRIL_TAG_FIELD_LAYOUT);
         }
 
         setupCameras();
