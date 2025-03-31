@@ -7,6 +7,32 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
 public class MathUtilities {
+    
+    public static class ArmUtilities {
+
+        /**
+         * Convert the actual angle of the arm to the motor encoder
+         * 
+         * @param rotations rotations
+         * @param gearRatio
+         * @return
+         */
+        public static Angle convertArmAngleToMotorAngle(double rotations, double gearRatio) {
+            return Rotations.of(rotations * gearRatio);
+        }
+
+        /**
+         * Convert the encoder output to the actual angle of the arm
+         * 
+         * @param rotations rotations
+         * @param gearRatio
+         * @return
+         */
+        public static Angle convertMotorAngleToArmAngle(double rotations, double gearRatio) {
+            return Rotations.of(rotations / gearRatio);
+        }
+    }
+
     public static class ElevatorUtilities {
 
         /**

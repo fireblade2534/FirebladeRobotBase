@@ -80,7 +80,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // Define the trapizoid profile for the pids
         TrapezoidProfile.Constraints stage1Constraints = new TrapezoidProfile.Constraints(Constants.ElevatorConstants.Stage1.MAX_VELOCITY, Constants.ElevatorConstants.Stage1.MAX_ACCELERATION);
-        TrapezoidProfile.Constraints stage2Constraints = new TrapezoidProfile.Constraints(Constants.ElevatorConstants.Stage1.MAX_VELOCITY, Constants.ElevatorConstants.Stage1.MAX_ACCELERATION);
+        TrapezoidProfile.Constraints stage2Constraints = new TrapezoidProfile.Constraints(Constants.ElevatorConstants.Stage2.MAX_VELOCITY, Constants.ElevatorConstants.Stage2.MAX_ACCELERATION);
 
         // Initalize the motor pids
         stage1Controller = new ProfiledPIDController(Constants.ElevatorConstants.Stage1.P, Constants.ElevatorConstants.Stage1.I, Constants.ElevatorConstants.Stage1.D, stage1Constraints);
@@ -126,19 +126,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         stage2Motor.set(speed);
     }
 
-    public double getStage1EncoderSetpoint() {
+    public double getStage1Setpoint() {
         return stage1Controller.getSetpoint().position;
     }
 
-    public double getStage2EncoderSetpoint() {
+    public double getStage2Setpoint() {
         return stage2Controller.getSetpoint().position;
     }
 
-    public void setStage1EncoderSetpoint(double height) {
+    public void setStage1Setpoint(double height) {
         stage1Controller.setGoal(MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)));
     }
 
-    public void setStage2EncoderSetpoint(double height) {
+    public void setStage2Setpoint(double height) {
         stage2Controller.setGoal(MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT)));
     }
 

@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
+import frc.robot.commands.ControlShoulderCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PathfindingSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
@@ -34,17 +36,18 @@ public class RobotContainer {
   public static final PathfindingSubsystem pathfindingSubsystem = new PathfindingSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   
   // Initalize driver controller and stream
   public static final CommandJoystick driverController = new CommandJoystick(Constants.DriverConstants.PORT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
 
   public static final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.swerveDrive,
-      () -> Controller.mapAxis(driverController.getY(), Constants.DriverConstants.CONTROL_EXPONENT),
-      () -> Controller.mapAxis(driverController.getX(), Constants.DriverConstants.CONTROL_EXPONENT))
+      () -> Controller.mapAxis(-driverController.getY(), Constants.DriverConstants.CONTROL_EXPONENT),
+      () -> Controller.mapAxis(-driverController.getX(), Constants.DriverConstants.CONTROL_EXPONENT))
       .withControllerRotationAxis(() -> -Controller.mapAxis(driverController.getZ(), Constants.DriverConstants.CONTROL_EXPONENT) * Constants.DriverConstants.ROTATION_SCALE)
       .deadband(Math.pow(Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT))
       .scaleTranslation(Constants.DriverConstants.TRANSLATION_SCALE)
-      .allianceRelativeControl(true);
+      .allianceRelativeControl(false);
 
   // Auto systems
   public SendableChooser<Command> autoChooser;
@@ -78,6 +81,12 @@ public class RobotContainer {
   private void configureBindings() {
     Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveFieldOrientedSupplier(driveAngularVelocity);
 
+    /*
+     * Shoulder controls
+     */
+    driverController.pov(0).whileTrue(new ControlShoulderCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    driverController.pov(180).whileTrue(new ControlShoulderCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    
     /*
      * Elevator controls
      */

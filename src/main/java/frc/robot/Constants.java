@@ -252,6 +252,7 @@ public final class Constants {
     public static final int CONTROL_EXPONENT = 2;
     public static final double CONTROL_STAGE1_SPEED = 1; // Feet/Second
     public static final double CONTROL_STAGE2_SPEED = 1; // Feet/Second
+    public static final double CONTROL_SHOULDER_SPEED = 600; // Degrees/Second
   }
 
   public static final boolean USE_WELDED_FIELD = false;
@@ -306,10 +307,10 @@ public final class Constants {
     public static class Stage1 {
       public static int ID = 3;
       public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 200; // Not sure the unit
       public static double P = 65;
       public static double I = 0;
-      public static double D = 1.2;
+      public static double D = 1.1;
       public static double S = 0.05; // Volts
       public static double G = 1.3; // Volts
       public static double V = 17; // Volts/(Meters/Second)
@@ -323,29 +324,56 @@ public final class Constants {
     public static class Stage2 {
       public static int ID = 2;
       public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 200; // Not sure the unit
       public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
       public static double P = 65;
       public static double I = 0;
-      public static double D = 1.2;
+      public static double D = 1.1;
       public static double S = 0.05; // Volts
       public static double G = 0.6; // Volts
       public static double V = 14.52; // Volts/(Meters/Second)
       public static double A = 0.04; // Volts/(Meters/Second^2) 
-      public static double MASS = 22.0462; // Pounds
+      public static double MASS = 35; // Pounds
       public static double DRUM_RADIUS = 0.98110236; // Inches
       public static double GEAR_RATIO = 15.7143;
       public static double HARD_MAX_HEIGHT = 1.65; // Feet
     }
+  }
 
+  public static class ArmConstants {
     public static class Shoulder {
-      
+      public static int ID1 = 4;
+      public static int ID2 = 8;
+      public static double MAX_VELOCITY = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 200; // Not sure the unit
+      public static double P = 0.5;
+      public static double I = 0;
+      public static double D = 0.05;
+      public static double S = 0.05; // Volts
+      public static double G = 3.48; // Volts
+      public static double V = 0.01; // Volts/(Degrees/Second)
+      public static double A = 0.02; // Volts/(Degrees/Second^2) 
+      public static double MASS = 10; // Pounds
+      public static double MIN_ANGLE = -80; // Degrees
+      public static double MAX_ANGLE = 70; // Degrees
+      public static double STARTING_ANGLE = 0; // Degrees
+      public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
+      public static double GEAR_RATIO = 48;
     }
+
+    public static class Wrist {
+      public static int ID = 5;
+      public static double MASS = 15; // Pounds
+    }
+
+    public static double LENGTH = 2.15; // Feet
+    
   }
 
   public static class DebugConstants {
-    public static boolean DEBUG_VISION = true;
-    public static boolean DEBUG_ELEVATOR = true;
+    public static boolean DEBUG_VISION = false;
+    public static boolean DEBUG_ELEVATOR = false;
+    public static boolean DEBUG_ARM = false;
     public static boolean ANIMATE_ROBOT = true;
   }
 }

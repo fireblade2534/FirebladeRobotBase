@@ -7,6 +7,7 @@ import frc.robot.utilities.AllianceUtilities;
 public class Reef {
     public Pose2d getReefIndexPose(int reefIndex) {
         int tagID;
+        System.out.println("IS BLUE " + AllianceUtilities.isBlueAlliance());
         if (AllianceUtilities.isBlueAlliance()) {
             tagID = Constants.ReefConstants.FieldConstants.BLUE_ALLIANCE_REEF_TAG_IDS[reefIndex];
         } else {

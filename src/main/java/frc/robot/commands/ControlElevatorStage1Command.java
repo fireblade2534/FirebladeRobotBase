@@ -17,7 +17,7 @@ public class ControlElevatorStage1Command extends Command {
 
     @Override
     public void execute() {
-        RobotContainer.elevatorSubsystem.setStage1EncoderSetpoint(RobotContainer.elevatorSubsystem.getStage1EncoderSetpoint() + (elevatorSpeed / 50));
+        RobotContainer.elevatorSubsystem.setStage1Setpoint(RobotContainer.elevatorSubsystem.getStage1Setpoint() + (elevatorSpeed / 50));
     }
 
     @Override

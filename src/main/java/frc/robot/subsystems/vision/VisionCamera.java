@@ -63,7 +63,7 @@ public class VisionCamera {
             cameraProperties.setLatencyStdDevMs(average_latency_std_devs);
 
             this.cameraSim = new PhotonCameraSim(this.camera, cameraProperties);
-            this.cameraSim.enableDrawWireframe(true);
+            // this.cameraSim.enableDrawWireframe(true);
             visionSim.addCamera(this.cameraSim, this.cameraOffset);
         }
 
