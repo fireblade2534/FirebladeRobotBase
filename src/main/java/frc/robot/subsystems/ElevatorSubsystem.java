@@ -159,11 +159,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetStage1Setpoint() {
-        stage1Controller.setGoal(getStage1Height());
+        setStage1Setpoint(getStage1Height());
     }
 
     public void resetStage2Setpoint() {
-        stage1Controller.setGoal(getStage2Height());
+        setStage2Setpoint(getStage2Height());
     }
 
     @Override

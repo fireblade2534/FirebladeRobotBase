@@ -55,6 +55,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     RobotContainer.elevatorSubsystem.resetStage1Setpoint();
     RobotContainer.elevatorSubsystem.resetStage2Setpoint();
+    
+    RobotContainer.armSubsystem.resetShoulderSetpoint();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

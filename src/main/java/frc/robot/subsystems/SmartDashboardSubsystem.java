@@ -40,11 +40,13 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 });
             }
         }
-        if (Constants.DebugConstants.DEBUG_ELEVATOR || Constants.DebugConstants.DEBUG_ARM || Constants.DebugConstants.ANIMATE_ROBOT) {
+        if (Constants.DebugConstants.DEBUG_ELEVATOR || Constants.DebugConstants.DEBUG_ARM || Constants.DebugConstants.DEBUG_WRIST || Constants.DebugConstants.ANIMATE_ROBOT) {
             double stage1Height = RobotContainer.elevatorSubsystem.getStage1Height();
             double stage2Height = RobotContainer.elevatorSubsystem.getStage2Height();
 
             double shoulderAngle = RobotContainer.armSubsystem.getShoulderAngle();
+
+            double wristAngle = RobotContainer.armSubsystem.getWristAngle();
 
             if (Constants.DebugConstants.DEBUG_ELEVATOR) {
                 SmartDashboard.putNumber("Elevator/Stage1/Encoder", RobotContainer.elevatorSubsystem.getStage1MotorEncoder());
@@ -60,6 +62,11 @@ public class SmartDashboardSubsystem extends SubsystemBase {
             if (Constants.DebugConstants.DEBUG_ARM) {
                 SmartDashboard.putNumber("Arm/Shoulder/Setpoint", RobotContainer.armSubsystem.getShoulderSetpoint());
                 SmartDashboard.putNumber("Arm/Shoulder/Angle", shoulderAngle);
+            }
+
+            if (Constants.DebugConstants.DEBUG_WRIST) {
+                SmartDashboard.putNumber("Arm/Wrist/Setpoint", RobotContainer.armSubsystem.getWristSetpoint());
+                SmartDashboard.putNumber("Arm/Wrist/Angle", wristAngle);
             }
 
             if (Constants.DebugConstants.ANIMATE_ROBOT) {
@@ -94,7 +101,7 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                     shoulderPose.getRotation().getQuaternion().getZ()
                 });
 
-                Pose3d wristPose = shoulderPose;
+                Pose3d wristPose = new Pose3d(0.15, 0, stage1Height + stage2Height + 0.45, new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
                 SmartDashboard.putNumberArray("Arm/Wrist/Position", new double[] {
                     wristPose.getX(),
                     wristPose.getY(),

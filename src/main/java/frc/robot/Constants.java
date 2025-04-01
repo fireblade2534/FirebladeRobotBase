@@ -252,7 +252,8 @@ public final class Constants {
     public static final int CONTROL_EXPONENT = 2;
     public static final double CONTROL_STAGE1_SPEED = 1; // Feet/Second
     public static final double CONTROL_STAGE2_SPEED = 1; // Feet/Second
-    public static final double CONTROL_SHOULDER_SPEED = 600; // Degrees/Second
+    public static final double CONTROL_SHOULDER_SPEED = 500; // Degrees/Second
+    public static final double CONTROL_WRIST_SPEED = 500; // Degrees/Second
   }
 
   public static final boolean USE_WELDED_FIELD = false;
@@ -343,7 +344,7 @@ public final class Constants {
   public static class ArmConstants {
     public static class Shoulder {
       public static int ID1 = 4;
-      public static int ID2 = 8;
+      //public static int ID2 = 8;
       public static double MAX_VELOCITY = 120; // Not sure the unit
       public static double MAX_ACCELERATION = 200; // Not sure the unit
       public static double P = 0.5;
@@ -363,7 +364,18 @@ public final class Constants {
 
     public static class Wrist {
       public static int ID = 5;
+      public static double MAX_VELOCITY = 120; // Not sure the unit
+      public static double MAX_ACCELERATION = 200; // Not sure the unit
+      public static double P = 0.5;
+      public static double I = 0;
+      public static double D = 0.05;
+      public static double S = 0.05; // Volts
+      public static double G = 3.48; // Volts
+      public static double V = 0.01; // Volts/(Degrees/Second)
+      public static double A = 0.02; // Volts/(Degrees/Second^2) 
       public static double MASS = 15; // Pounds
+      public static double MOI = 0.05; // Moment of innertia jKgMetersSquared
+      public static double GEAR_RATIO = 400;
     }
 
     public static double LENGTH = 2.15; // Feet
@@ -374,6 +386,7 @@ public final class Constants {
     public static boolean DEBUG_VISION = false;
     public static boolean DEBUG_ELEVATOR = false;
     public static boolean DEBUG_ARM = false;
+    public static boolean DEBUG_WRIST = true;
     public static boolean ANIMATE_ROBOT = true;
   }
 }

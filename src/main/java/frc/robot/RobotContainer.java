@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
 import frc.robot.commands.ControlShoulderCommand;
+import frc.robot.commands.ControlWristCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -86,6 +87,12 @@ public class RobotContainer {
      */
     driverController.pov(0).whileTrue(new ControlShoulderCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
     driverController.pov(180).whileTrue(new ControlShoulderCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+
+    /*
+     * Wrist controls
+     */
+    driverController.pov(90).whileTrue(new ControlWristCommand(Constants.DriverConstants.CONTROL_WRIST_SPEED));
+    driverController.pov(270).whileTrue(new ControlWristCommand(-Constants.DriverConstants.CONTROL_WRIST_SPEED));
     
     /*
      * Elevator controls
