@@ -208,6 +208,10 @@ public class ArmSubsystem extends SubsystemBase {
                 wristMotorEncoder.getVelocity() / 60, Constants.ArmConstants.Wrist.GEAR_RATIO).in(Rotations));
     }
 
+    public void resetWristSetpoint() {
+        setWristSetpoint(getWristAngle());
+    }
+
     @Override
     public void periodic() {
         // Run the pid and feed foward for the shoulder

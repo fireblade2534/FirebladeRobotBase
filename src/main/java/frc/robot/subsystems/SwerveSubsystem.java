@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.FileUtilities;
 import frc.robot.utilities.JsonUtilities;
 import swervelib.SwerveDrive;
@@ -114,5 +115,6 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         swerveDrive.updateOdometry();
+        RobotContainer.visionSubsystem.updateVisionEstimates();
     }
 }

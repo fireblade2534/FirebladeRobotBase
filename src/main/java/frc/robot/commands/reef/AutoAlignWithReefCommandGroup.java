@@ -8,7 +8,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.PathfindToPoseCommand;
+import frc.robot.commands.pathfinding.PathfindToPoseCommand;
+import frc.robot.utilities.Reef;
 public class AutoAlignWithReefCommandGroup extends SequentialCommandGroup {
     // The reef indexes start from 0 at the side of the reef farthest (and the left
     // reef pole) from the middle driverstation of your robots team. The indexes go
@@ -16,7 +17,8 @@ public class AutoAlignWithReefCommandGroup extends SequentialCommandGroup {
 
     public AutoAlignWithReefCommandGroup(int reefIndex) {
         System.out.println("Generating auto align with reef index " + reefIndex);
-
-        addCommands(new PathfindToPoseCommand(new Reef().getReefIndexPose(reefIndex).transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0), new PathfindToPoseCommand(new Reef().getReefIndexPose(reefIndex + 1).transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0));
+        Pose2d reefPose = Reef.getReefIndexPose(reefIndex, true);
+        System.out.println(reefPose);
+        addCommands(new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset.times(1.5)), 0), new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0));
     }
 }

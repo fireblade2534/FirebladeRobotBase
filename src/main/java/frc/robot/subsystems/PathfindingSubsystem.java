@@ -69,8 +69,8 @@ public class PathfindingSubsystem extends SubsystemBase {
                    // optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
                                                 // holonomic drive trains
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                        new PIDConstants(Constants.SwerveConstants.TranslationPID.P, Constants.SwerveConstants.TranslationPID.I, Constants.SwerveConstants.TranslationPID.D), // Translation PID constants
+                        new PIDConstants(Constants.SwerveConstants.HeadingPID.P, Constants.SwerveConstants.HeadingPID.I, Constants.SwerveConstants.HeadingPID.D) // Rotation PID constants
                 ),
                 pathPlannerConfig, // The robot configuration
                 () -> !AllianceUtilities.isBlueAlliance(),

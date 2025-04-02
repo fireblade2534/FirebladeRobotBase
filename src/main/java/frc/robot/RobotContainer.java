@@ -19,6 +19,7 @@ import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
 import frc.robot.commands.ControlShoulderCommand;
 import frc.robot.commands.ControlWristCommand;
+import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -57,6 +58,11 @@ public class RobotContainer {
    * Command groups
    */
   private final AutoAlignWithReefCommandGroup autoAlignReef0;
+  private final AutoAlignWithReefCommandGroup autoAlignReef1;
+  private final AutoAlignWithReefCommandGroup autoAlignReef2;
+  private final AutoAlignWithReefCommandGroup autoAlignReef3;
+  private final AutoAlignWithReefCommandGroup autoAlignReef4;
+  private final AutoAlignWithReefCommandGroup autoAlignReef5;
 
   public RobotContainer() {
     System.out.println("Configuring robot container");
@@ -64,6 +70,11 @@ public class RobotContainer {
     // PathfindingCommand.warmupCommand().schedule();
 
     autoAlignReef0 = new AutoAlignWithReefCommandGroup(0);
+    autoAlignReef1 = new AutoAlignWithReefCommandGroup(1);
+    autoAlignReef2 = new AutoAlignWithReefCommandGroup(2);
+    autoAlignReef3 = new AutoAlignWithReefCommandGroup(3);
+    autoAlignReef4 = new AutoAlignWithReefCommandGroup(4);
+    autoAlignReef5 = new AutoAlignWithReefCommandGroup(5);
     
     configureBindings();
 
@@ -97,17 +108,31 @@ public class RobotContainer {
     /*
      * Elevator controls
      */
-    driverController.button(5).whileTrue(new ControlElevatorStage1Command(Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE1_SPEED)));
-    driverController.button(3).whileTrue(new ControlElevatorStage1Command(-Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE1_SPEED)));
+    //driverController.button(5).whileTrue(new ControlElevatorStage1Command(Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE1_SPEED)));
+    //driverController.button(3).whileTrue(new ControlElevatorStage1Command(-Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE1_SPEED)));
 
-    driverController.button(6).whileTrue(new ControlElevatorStage2Command(Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE2_SPEED)));
-    driverController.button(4).whileTrue(new ControlElevatorStage2Command(-Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE2_SPEED)));
+    //driverController.button(6).whileTrue(new ControlElevatorStage2Command(Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE2_SPEED)));
+    //driverController.button(4).whileTrue(new ControlElevatorStage2Command(-Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE2_SPEED)));
+
+    /*
+     * Elevator presets
+     */
+    driverController.button(5).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[0])));
+    driverController.button(3).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[1])));
+
+    driverController.button(6).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[2])));
+    driverController.button(4).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[3])));
 
     /*
      * Test auto align command
      */
 
      driverController.button(7).onTrue(autoAlignReef0);
+     driverController.button(8).onTrue(autoAlignReef1);
+     driverController.button(9).onTrue(autoAlignReef2);
+     driverController.button(10).onTrue(autoAlignReef3);
+     driverController.button(11).onTrue(autoAlignReef4);
+     driverController.button(12).onTrue(autoAlignReef5);
 
 
      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);

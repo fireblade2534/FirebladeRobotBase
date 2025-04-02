@@ -237,9 +237,9 @@ public class JsonUtilities {
 
             // Get heading pid data
             Map<String, Object> heading = new LinkedHashMap<String, Object>();
-            heading.put("p", Constants.SwerveConstants.HeadingPid.P);
-            heading.put("i", Constants.SwerveConstants.HeadingPid.I);
-            heading.put("d", Constants.SwerveConstants.HeadingPid.D);
+            heading.put("p", Constants.SwerveConstants.HeadingPID.P);
+            heading.put("i", Constants.SwerveConstants.HeadingPID.I);
+            heading.put("d", Constants.SwerveConstants.HeadingPID.D);
             outputMap.put("heading", heading);
             
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

@@ -36,10 +36,13 @@ public class VisionSubsystem extends SubsystemBase {
             visionSim.addAprilTags(Constants.APRIL_TAG_FIELD_LAYOUT);
         }
 
-        setupCameras();
+        boolean anyCamera = setupCameras();
+        if (anyCamera) {
+            RobotContainer.swerveSubsystem.swerveDrive.stopOdometryThread();
+        }
     }
 
-    private void setupCameras() {
+    private boolean setupCameras() {
         for (Class<?> limelightConfig : Constants.VisionConstants.class.getDeclaredClasses()) {
             String limelightName;
             try {
@@ -93,6 +96,7 @@ public class VisionSubsystem extends SubsystemBase {
                 e.printStackTrace();
             }
         }
+        return limelightCameras.size() > 0;
     }
 
     @Override
@@ -104,8 +108,8 @@ public class VisionSubsystem extends SubsystemBase {
         });
     }
 
-    @Override
-    public void periodic() {
+
+    public void updateVisionEstimates() {
         for (var camera : limelightCameras) {
             var visionEstimate = camera.updateVision();
 

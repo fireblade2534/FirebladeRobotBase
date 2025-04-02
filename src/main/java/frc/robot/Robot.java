@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
     RobotContainer.elevatorSubsystem.resetStage2Setpoint();
     
     RobotContainer.armSubsystem.resetShoulderSetpoint();
+    RobotContainer.armSubsystem.resetWristSetpoint();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

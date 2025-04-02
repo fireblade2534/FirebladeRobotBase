@@ -181,7 +181,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 20; // Amps
 
         public static class Pidf {
-          public static final double P = 0.01;
+          public static final double P = 0.015;
           public static final double I = 0;
           public static final double D = 0.1;
           public static final double F = 0;
@@ -196,7 +196,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 40; // Amps
 
         public static class Pidf {
-          public static final double P = 0.0020645;
+          public static final double P = 0.0021645;
           public static final double I = 0;
           public static final double D = 0;
           public static final double F = 0;
@@ -207,10 +207,16 @@ public final class Constants {
       public static final int OPTIMAL_VOLTAGE = 12; // Volts
     }
 
-    public static class HeadingPid {
-      public static final double P = 0.4;
+    public static class TranslationPID {
+      public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.01;
+      public static final double D = 0.005;
+    }
+
+    public static class HeadingPID {
+      public static final double P = 7;
+      public static final double I = 0;
+      public static final double D = 0.005;
     }
 
     public static class WheelConstants {
@@ -218,7 +224,7 @@ public final class Constants {
       public static final double DIAMETER = 4; // Inches
     }
 
-    public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the audo
+    public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
     public static final double ANGLE_JOYSTICK_RADIUS_DEADBAND = 0.5;
     public static final List<String> MODULE_FILES = List.of("frontleft.json", "frontright.json", "backleft.json",
@@ -232,7 +238,7 @@ public final class Constants {
     public static final double LENGTH = 3.41666667; // Feet
     public static final double MAX_SPEED = 24; // Feet/Second
     public static final double MAX_ACHIEVABLE_SPEED = 24; // Feet/Second
-    public static final double MAX_ACCELERATION = 9.84252; // Feet/Second
+    public static final double MAX_ACCELERATION = 7.5; // Feet/Second
     public static final double MAX_ANGULAR_VELOCITY = 540; // Degrees/Second
     public static final double MAX_ANGULAR_ACCELERATION = 720; // Degrees/Second
     public static final double MOI = 6.883;
@@ -262,12 +268,13 @@ public final class Constants {
   public static class VisionConstants {
     public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 0.6); // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.3); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 70; // The higher this is the less that far targets increase the std devs
-    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 90; // The higher this is the less that the robot moving increases the std devs
-    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 90; // The higher this is the less that the robot turning increases the std devs
-    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 5; // The higher this is the less that a low number of targets increases the std devs
-    public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 2; // The higher this is the less that a high average ambiguty increases the std devs
-    public static final double OVERALL_MULTIPLIER = 1;
+    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 60; // The higher this is the less that far targets increase the std devs
+    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 80; // The higher this is the less that the robot moving increases the std devs
+    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 80; // The higher this is the less that the robot turning increases the std devs
+    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 0.4; // The higher this is the less that a low number of targets increases the std devs
+    public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 0.1; // The higher this is the less that a high average ambiguty increases the std devs
+    public static final double OVERALL_MULTIPLIER = 1.1;
+    public static final double CUTOFF = 2;
 
     public static class Limelight_4 {
       public static final String NAME = "Limelight 4";
@@ -297,11 +304,15 @@ public final class Constants {
       public static class FieldConstants {
           public static final int[] BLUE_ALLIANCE_REEF_TAG_IDS = {21, 22, 17, 18, 19, 20};
           public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
+
+          public static final double[] REEF_HEIGHTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
       }
 
       public static class AlignConstants {
-          public static final Transform2d alignOffset = new Transform2d(new Translation2d(1, 0), new Rotation2d(Units.degreesToRadians(180)));
+          public static final Transform2d alignOffset = new Transform2d(new Translation2d(-0.75, 0), new Rotation2d(Units.degreesToRadians(0)));
       }
+
+      public static final double CLOSE_DISTANCE = 2; // Feet
   }
 
   public static class ElevatorConstants {
@@ -319,7 +330,8 @@ public final class Constants {
       public static double MASS = 50; // Pounds
       public static double DRUM_RADIUS = 0.98110236; // Inches
       public static double GEAR_RATIO = 18.5714;
-      public static double HARD_MAX_HEIGHT = 2.4; // Feet
+      public static double HARD_MAX_HEIGHT = 2.75; // Feet
+      public static double TOLLERANCE = 0.1; // Feet
     }
 
     public static class Stage2 {
@@ -337,7 +349,8 @@ public final class Constants {
       public static double MASS = 35; // Pounds
       public static double DRUM_RADIUS = 0.98110236; // Inches
       public static double GEAR_RATIO = 15.7143;
-      public static double HARD_MAX_HEIGHT = 1.65; // Feet
+      public static double HARD_MAX_HEIGHT = 1.8; // Feet
+      public static double TOLLERANCE = 0.1; // Feet
     }
   }
 
@@ -383,10 +396,10 @@ public final class Constants {
   }
 
   public static class DebugConstants {
-    public static boolean DEBUG_VISION = false;
+    public static boolean DEBUG_VISION = true;
     public static boolean DEBUG_ELEVATOR = false;
     public static boolean DEBUG_ARM = false;
-    public static boolean DEBUG_WRIST = true;
+    public static boolean DEBUG_WRIST = false;
     public static boolean ANIMATE_ROBOT = true;
   }
 }

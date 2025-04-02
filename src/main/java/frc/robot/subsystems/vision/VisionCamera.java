@@ -132,6 +132,10 @@ public class VisionCamera {
 
                 temporaryStdDevs = temporaryStdDevs.times(1 + ((distanceMultiplier + translationVelocityMultiplier
                         + rotationalVelocityMultiplier + targetCountMultiplier + targetAmbiguity) * Constants.VisionConstants.OVERALL_MULTIPLIER));
+
+                if (temporaryStdDevs.get(0, 0) > Constants.VisionConstants.CUTOFF) {
+                    temporaryStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+                }
             }
 
             currentStdDevs = temporaryStdDevs;
