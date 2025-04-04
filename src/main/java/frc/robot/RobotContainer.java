@@ -21,6 +21,7 @@ import frc.robot.commands.ControlShoulderCommand;
 import frc.robot.commands.ControlWristCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
+import frc.robot.commands.reef.AutoScoreCoralCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PathfindingSubsystem;
@@ -117,11 +118,11 @@ public class RobotContainer {
     /*
      * Elevator presets
      */
-    driverController.button(5).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[0])));
-    driverController.button(3).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[1])));
+    driverController.button(5).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[0])));
+    driverController.button(3).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[1])));
 
-    driverController.button(6).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[2])));
-    driverController.button(4).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ReefConstants.FieldConstants.REEF_HEIGHTS[3])));
+    driverController.button(6).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[2])));
+    driverController.button(4).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[3])));
 
     /*
      * Test auto align command
@@ -133,6 +134,12 @@ public class RobotContainer {
      driverController.button(10).onTrue(autoAlignReef3);
      driverController.button(11).onTrue(autoAlignReef4);
      driverController.button(12).onTrue(autoAlignReef5);
+
+     /*
+      * Testing stuff
+      */
+
+      driverController.button(1).onTrue(new AutoScoreCoralCommand(false));
 
 
      swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);

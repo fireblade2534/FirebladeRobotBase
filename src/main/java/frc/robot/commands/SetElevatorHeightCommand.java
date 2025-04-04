@@ -25,8 +25,8 @@ public class SetElevatorHeightCommand extends Command {
 
         this.targetRatio = targetHeight / totalHeight;
 
-        this.target1Height = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * this.targetRatio;
-        this.target2Height = Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * this.targetRatio;
+        this.target1Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * this.targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
+        this.target2Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * this.targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
 
         addRequirements(RobotContainer.elevatorSubsystem);
     }

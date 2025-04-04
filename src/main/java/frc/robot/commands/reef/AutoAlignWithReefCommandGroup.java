@@ -8,6 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.commands.pathfinding.MoveToPoseCommand;
 import frc.robot.commands.pathfinding.PathfindToPoseCommand;
 import frc.robot.utilities.Reef;
 public class AutoAlignWithReefCommandGroup extends SequentialCommandGroup {
@@ -18,7 +19,7 @@ public class AutoAlignWithReefCommandGroup extends SequentialCommandGroup {
     public AutoAlignWithReefCommandGroup(int reefIndex) {
         System.out.println("Generating auto align with reef index " + reefIndex);
         Pose2d reefPose = Reef.getReefIndexPose(reefIndex, true);
-        System.out.println(reefPose);
-        addCommands(new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset.times(1.5)), 0), new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0));
+        addCommands(new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset.times(1.2)), 0), new MoveToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0.05, 2));
     }
 }
+ 

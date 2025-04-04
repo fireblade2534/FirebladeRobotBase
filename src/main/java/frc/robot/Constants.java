@@ -210,19 +210,23 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.005;
+      public static final double D = 0.01;
     }
 
     public static class HeadingPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.005;
+      public static final double D = 0.01;
     }
 
     public static class WheelConstants {
       public static final double WHEEL_GRIP_COF = 1.19;
       public static final double DIAMETER = 4; // Inches
     }
+
+    public static final double TRANSLATION_ZERO_THRESHOLD = 0.1; // Feet/Second
+    public static final double ROTATION_ZERO_THRESHOLD = 0.1; // Degrees/Second
+
 
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
@@ -269,12 +273,12 @@ public final class Constants {
     public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 0.6); // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.3); // The standard deviations of our vision estimated poses, which affect correction rate
     public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 60; // The higher this is the less that far targets increase the std devs
-    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 80; // The higher this is the less that the robot moving increases the std devs
-    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 80; // The higher this is the less that the robot turning increases the std devs
-    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 0.4; // The higher this is the less that a low number of targets increases the std devs
+    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 70; // The higher this is the less that the robot moving increases the std devs
+    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 70; // The higher this is the less that the robot turning increases the std devs
+    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 0.2; // The higher this is the less that a low number of targets increases the std devs
     public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 0.1; // The higher this is the less that a high average ambiguty increases the std devs
-    public static final double OVERALL_MULTIPLIER = 1.1;
-    public static final double CUTOFF = 2;
+    public static final double OVERALL_MULTIPLIER = 1;
+    public static final double CUTOFF = 2.5;
 
     public static class Limelight_4 {
       public static final String NAME = "Limelight 4";
@@ -293,7 +297,7 @@ public final class Constants {
         public static final int FPS = 120;
         public static final double DIAGONAL_FOV = 91.12; // Degrees
         public static final double AVERGAGE_PIXEL_ERROR = 0.25;
-        public static final double AVERGAGE_PIXEL_ERROR_STD_DEVS = 0.05;
+        public static final double AVERGAGE_PIXEL_ERROR_STD_DEVS = 0.06;
         public static final double AVERAGE_LATENCY = 15; // Miliseconds
         public static final double AVERAGE_LATENCY_STD_DEVS = 0.1;
       }
@@ -305,7 +309,24 @@ public final class Constants {
           public static final int[] BLUE_ALLIANCE_REEF_TAG_IDS = {21, 22, 17, 18, 19, 20};
           public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
 
-          public static final double[] REEF_HEIGHTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
+          public static class L1 {
+            public static double MAX_HEIGHT = 1.50919; // Feet
+          }
+
+          public static class L2 {
+            public static double MAX_HEIGHT = 2.65748; // Feet
+          }
+
+          public static class L3 {
+            public static double MAX_HEIGHT = 3.96982; // Feet
+          }
+          
+          public static class L4 {
+            public static double MAX_HEIGHT = 6.00394; // Feet
+          }
+
+          public static final double BRANCH_LEFT_OFFSET = 0.563040616798; // Feet
+          public static final double BRANCH_FOWARD_OFFSET = 0.21141732; // Feet
       }
 
       public static class AlignConstants {
@@ -352,6 +373,8 @@ public final class Constants {
       public static double HARD_MAX_HEIGHT = 1.8; // Feet
       public static double TOLLERANCE = 0.1; // Feet
     }
+
+    public static final double[] HEIGHT_SETPOINTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
   }
 
   public static class ArmConstants {

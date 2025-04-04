@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
@@ -17,6 +18,26 @@ public class SmartDashboardSubsystem extends SubsystemBase {
         
     }
 
+    public static double[] convertPose3dToNumbers(Pose3d pose) {
+        return new double[] {
+            pose.getX(),
+            pose.getY(),
+            pose.getZ(),
+            pose.getRotation().getQuaternion().getW(),
+            pose.getRotation().getQuaternion().getX(),
+            pose.getRotation().getQuaternion().getY(),
+            pose.getRotation().getQuaternion().getZ()
+        };
+    }
+
+    public static double[] convertPose2dToNumbers(Pose2d pose) {
+        return new double[] {
+            pose.getX(),
+            pose.getY(),
+            pose.getRotation().getDegrees()
+        };
+    }
+
     @Override
     public void periodic() {
         if (Constants.DebugConstants.DEBUG_VISION == true) {
@@ -27,16 +48,7 @@ public class SmartDashboardSubsystem extends SubsystemBase {
 
                 camera.getLatestEstimatedPose().ifPresent(latestPose -> {
                     Pose3d estimatedPose = latestPose.estimatedPose;
-                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose",
-                            new double[] {
-                                    estimatedPose.getX(),
-                                    estimatedPose.getY(),
-                                    estimatedPose.getZ(),
-                                    estimatedPose.getRotation().getQuaternion().getW(),
-                                    estimatedPose.getRotation().getQuaternion().getX(),
-                                    estimatedPose.getRotation().getQuaternion().getY(),
-                                    estimatedPose.getRotation().getQuaternion().getZ()
-                            });
+                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", convertPose3dToNumbers(estimatedPose));
                 });
             }
         }
@@ -91,26 +103,10 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 });
 
                 Pose3d shoulderPose = new Pose3d(0.15, 0, stage1Height + stage2Height + 0.45, new Rotation3d(0, -Units.degreesToRadians(shoulderAngle),0));
-                SmartDashboard.putNumberArray("Arm/Shoulder/Position", new double[] {
-                    shoulderPose.getX(),
-                    shoulderPose.getY(),
-                    shoulderPose.getZ(),
-                    shoulderPose.getRotation().getQuaternion().getW(),
-                    shoulderPose.getRotation().getQuaternion().getX(),
-                    shoulderPose.getRotation().getQuaternion().getY(),
-                    shoulderPose.getRotation().getQuaternion().getZ()
-                });
+                SmartDashboard.putNumberArray("Arm/Shoulder/Position", convertPose3dToNumbers(shoulderPose));
 
                 Pose3d wristPose = new Pose3d(0.15, 0, stage1Height + stage2Height + 0.45, new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
-                SmartDashboard.putNumberArray("Arm/Wrist/Position", new double[] {
-                    wristPose.getX(),
-                    wristPose.getY(),
-                    wristPose.getZ(),
-                    wristPose.getRotation().getQuaternion().getW(),
-                    wristPose.getRotation().getQuaternion().getX(),
-                    wristPose.getRotation().getQuaternion().getY(),
-                    wristPose.getRotation().getQuaternion().getZ()
-                });
+                SmartDashboard.putNumberArray("Arm/Wrist/Position", convertPose3dToNumbers(wristPose));
                 
             }
         }

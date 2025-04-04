@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
@@ -63,9 +64,15 @@ public class MathUtilities {
     }
 
     public static class PoseUtilities {
-        public Rotation2d rotationToTarget(Translation2d source, Translation2d target) {
+        public static Rotation2d rotationToTarget(Translation2d source, Translation2d target) {
             double targetRadians = Math.atan2(target.getY() - source.getY(), target.getX() - source.getX());
             return new Rotation2d(targetRadians);
+        }
+    }
+
+    public static class SpeedUtilities {
+        public static double convertChassisSpeed(ChassisSpeeds chassisSpeeds) {
+            return Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
         }
     }
 }
