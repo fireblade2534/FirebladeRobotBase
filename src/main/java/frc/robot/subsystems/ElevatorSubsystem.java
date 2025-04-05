@@ -166,8 +166,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         setStage2Setpoint(getStage2Height());
     }
 
+    public double getPivotPointOffset() {
+        return Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+    }
+
     public double getCarpetElevatorHeight() {
-        return (getStage1Height() + getStage2Height()) + Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+        return (getStage1Height() + getStage2Height()) + getPivotPointOffset();
+    }
+
+    public boolean checkGlobalHeightPossible(double height) {
+        double elevatorLocalHeight = height - getPivotPointOffset();
+
+        double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+        return elevatorLocalHeight >= 0 && elevatorLocalHeight <= maxHeight;
     }
 
     @Override

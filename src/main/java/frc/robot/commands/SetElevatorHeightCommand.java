@@ -22,7 +22,7 @@ public class SetElevatorHeightCommand extends Command {
     public SetElevatorHeightCommand(double targetHeight) {
         this.targetHeight = targetHeight;
 
-        targetHeight = targetHeight - Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) - Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) - Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+        targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset();
 
         targetHeight = MathUtil.clamp(targetHeight, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
 

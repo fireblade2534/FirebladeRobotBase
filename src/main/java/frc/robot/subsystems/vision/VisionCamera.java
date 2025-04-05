@@ -87,7 +87,6 @@ public class VisionCamera {
         double latestTiemstamp = -1;
         EstimatedRobotPose latestPose = null;
 
-
         for (PhotonPipelineResult result : photonResults) {
             robotEstimate = photonPoseEstimator.update(result);
 
@@ -96,14 +95,15 @@ public class VisionCamera {
             }
 
             EstimatedRobotPose foundRobotEstimate = robotEstimate.get();
-            
+
             if (foundRobotEstimate.timestampSeconds > latestTiemstamp) {
                 latestTiemstamp = foundRobotEstimate.timestampSeconds;
                 latestPose = foundRobotEstimate;
             }
 
             updateEstimationStdDevs(foundRobotEstimate, result.getTargets());
-            RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(foundRobotEstimate.estimatedPose.toPose2d(), foundRobotEstimate.timestampSeconds, getEstimationStdDevs());
+            RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(foundRobotEstimate.estimatedPose.toPose2d(),
+                    foundRobotEstimate.timestampSeconds, getEstimationStdDevs());
         }
 
         if (latestPose != null) {
@@ -122,13 +122,15 @@ public class VisionCamera {
         for (var target : targets) {
             Optional<Pose3d> targetPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
             if (targetPose.isEmpty()) {
-                    
+
                 continue;
             }
 
             validTargets++;
             averageAmbiguity += target.getPoseAmbiguity();
-            averageDistance += targetPose.get().getTranslation().getDistance(new Translation3d(RobotContainer.swerveSubsystem.getPose().getTranslation()));
+            averageDistance += targetPose.get()
+                    .getTranslation()
+                    .getDistance(new Translation3d(RobotContainer.swerveSubsystem.getPose().getTranslation()));
         }
 
         averageDistance /= validTargets;
@@ -145,7 +147,6 @@ public class VisionCamera {
         }
 
         currentStdDevs = temporaryStdDevs;
-        
 
     }
 

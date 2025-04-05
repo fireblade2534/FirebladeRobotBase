@@ -6,8 +6,8 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class SetArmConfigurationCommand extends Command {
-    private final Double shoulderAngle;
-    private final Double wristAngle;
+    private final Double  shoulderAngle;
+    private final Double  wristAngle;
     private final boolean waitTilDone;
 
     /**
@@ -19,8 +19,8 @@ public class SetArmConfigurationCommand extends Command {
      */
     public SetArmConfigurationCommand(Double shoulderAngle, Double wristAngle, boolean waitTilDone) {
         this.shoulderAngle = shoulderAngle;
-        this.wristAngle = wristAngle;
-        this.waitTilDone = waitTilDone;
+        this.wristAngle    = wristAngle;
+        this.waitTilDone   = waitTilDone;
 
         addRequirements(RobotContainer.armSubsystem);
     }
@@ -52,13 +52,15 @@ public class SetArmConfigurationCommand extends Command {
     public boolean isFinished() {
         if (waitTilDone) {
             if (this.shoulderAngle != null) {
-                if (!MathUtil.isNear(this.shoulderAngle, RobotContainer.armSubsystem.getShoulderAngle(), Constants.ArmConstants.Shoulder.TOLLERANCE)) {
+                if (!MathUtil.isNear(RobotContainer.armSubsystem.getShoulderSetpoint(),
+                    RobotContainer.armSubsystem.getShoulderAngle(), Constants.ArmConstants.Shoulder.TOLLERANCE)) {
                     return false;
                 }
             }
 
             if (this.wristAngle != null) {
-                if (!MathUtil.isNear(this.wristAngle, RobotContainer.armSubsystem.getWristAngle(), Constants.ArmConstants.Wrist.TOLLERANCE)) {
+                if (!MathUtil.isNear(RobotContainer.armSubsystem.getWristSetpoint(), RobotContainer.armSubsystem.getWristAngle(),
+                    Constants.ArmConstants.Wrist.TOLLERANCE)) {
                     return false;
                 }
             }

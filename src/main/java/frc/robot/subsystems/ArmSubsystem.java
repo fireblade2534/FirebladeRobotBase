@@ -173,7 +173,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getShoulderSetpoint() {
-        return shoulderController.getSetpoint().position;
+        return shoulderController.getGoal().position;
     }
 
     public void setShoulderSetpoint(double degrees) {
@@ -197,7 +197,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getWristSetpoint() {
-        return wristController.getSetpoint().position;
+        return wristController.getGoal().position;
     }
 
     public void setWristSetpoint(double degrees) {
@@ -216,6 +216,8 @@ public class ArmSubsystem extends SubsystemBase {
     public Command setShoulderAngle(double angle) {
         return runOnce(() -> setShoulderSetpoint(angle));
     }
+
+
 
 
     @Override

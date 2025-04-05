@@ -65,9 +65,9 @@ public class Reef {
      * @param tagPose The pose of the tag when facing the tag
      * @param left
      */
-    public static Pose3d getBranchTopPose(Pose2d tagPose, boolean left) {
-        Transform3d branchTransform = new Transform3d(Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_FOWARD_OFFSET), Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_LEFT_OFFSET), 0, new Rotation3d(0.0, 0.0, 0.0));
-        return new Pose3d(new Translation3d(tagPose.getTranslation()), new Rotation3d(tagPose.getRotation())).transformBy(branchTransform);
+    public static Pose2d getBranchTopPose(Pose2d tagPose, boolean left) {
+        Transform2d branchTransform = new Transform2d(Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_FOWARD_OFFSET), Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_LEFT_OFFSET), Rotation2d.fromDegrees(0));
+        return tagPose.transformBy(branchTransform);
     }
 
 
@@ -84,7 +84,6 @@ public class Reef {
 
         for (int index = 0; index < heightsList.length; index++) {
             double heightDiff = Math.abs(heightsList[index] - Units.metersToFeet(elevatorHeight));
-            System.out.println("OK SO AT HEIGHT " + index + " OF " + Units.metersToFeet(elevatorHeight) + " THE DIFF IS " + heightDiff);
             if (heightDiff < closestDistance) {
                 closestDistance = heightDiff;
                 closestIndex = index;
@@ -98,8 +97,6 @@ public class Reef {
 
     public static double getBranchAngle(int branchLevel) {
         switch(branchLevel) {
-            case 0:
-                return Constants.ReefConstants.FieldConstants.L1.BRANCH_ANGLE;
             case 1:
                 return Constants.ReefConstants.FieldConstants.L2.BRANCH_ANGLE;
             case 2:
