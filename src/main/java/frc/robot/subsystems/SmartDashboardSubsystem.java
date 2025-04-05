@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -46,10 +48,10 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Current Std Deviations",
                         camera.getEstimationStdDevs().getData());
 
-                camera.getLatestEstimatedPose().ifPresent(latestPose -> {
-                    Pose3d estimatedPose = latestPose.estimatedPose;
-                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", convertPose3dToNumbers(estimatedPose));
-                });
+                EstimatedRobotPose estimatedRobotPose = camera.getLatestEstimatedPose();
+                if (estimatedRobotPose != null) {
+                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", convertPose3dToNumbers(estimatedRobotPose.estimatedPose));
+                }
             }
         }
         if (Constants.DebugConstants.DEBUG_ELEVATOR || Constants.DebugConstants.DEBUG_ARM || Constants.DebugConstants.DEBUG_WRIST || Constants.DebugConstants.ANIMATE_ROBOT) {

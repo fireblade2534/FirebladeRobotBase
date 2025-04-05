@@ -166,6 +166,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         setStage2Setpoint(getStage2Height());
     }
 
+    public double getCarpetElevatorHeight() {
+        return (getStage1Height() + getStage2Height()) + Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+    }
+
     @Override
     public void simulationPeriodic() {
         stage1ElevatorSim.setInput(stage1MotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());

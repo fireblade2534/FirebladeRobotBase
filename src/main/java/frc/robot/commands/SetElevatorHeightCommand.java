@@ -21,6 +21,11 @@ public class SetElevatorHeightCommand extends Command {
      */
     public SetElevatorHeightCommand(double targetHeight) {
         this.targetHeight = targetHeight;
+
+        targetHeight = targetHeight - Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) - Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) - Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+
+        targetHeight = MathUtil.clamp(targetHeight, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+
         this.totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
 
         this.targetRatio = targetHeight / totalHeight;
@@ -33,7 +38,7 @@ public class SetElevatorHeightCommand extends Command {
 
     @Override
     public void initialize() {
-        System.out.println("Setting elevator height to " + (this.target1Height + this.target2Height) + " m");
+        System.out.println("Setting elevator height to " + (this.target1Height + this.target2Height) + " m from a raw command of " + this.targetHeight + " m");
         RobotContainer.elevatorSubsystem.setStage1Setpoint(this.target1Height);
         RobotContainer.elevatorSubsystem.setStage2Setpoint(this.target2Height);
     }
@@ -45,15 +50,15 @@ public class SetElevatorHeightCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        if (MathUtil.isNear(this.target1Height, RobotContainer.elevatorSubsystem.getStage1Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage1.TOLLERANCE))){
-            return true;
+        if (!MathUtil.isNear(this.target1Height, RobotContainer.elevatorSubsystem.getStage1Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage1.TOLLERANCE))){
+            return false;
         }
 
-        if (MathUtil.isNear(this.target2Height, RobotContainer.elevatorSubsystem.getStage2Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage2.TOLLERANCE))){
-            return true;
+        if (!MathUtil.isNear(this.target2Height, RobotContainer.elevatorSubsystem.getStage2Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage2.TOLLERANCE))){
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override

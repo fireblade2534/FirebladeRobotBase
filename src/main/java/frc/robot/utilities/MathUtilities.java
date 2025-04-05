@@ -1,5 +1,6 @@
 package frc.robot.utilities;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -73,6 +74,24 @@ public class MathUtilities {
     public static class SpeedUtilities {
         public static double convertChassisSpeed(ChassisSpeeds chassisSpeeds) {
             return Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
+        }
+    }
+
+    public static class AngleUtilities {
+        public static double normalizeAngle(double degrees) {
+            degrees = degrees % 360;
+
+            if (degrees > 180) {
+                degrees -= 360;
+            } else if (degrees < -180) {
+                degrees += 360;
+            }
+
+            return degrees;
+        }
+
+        public static Angle getPerpendicularAngle(double degrees) {
+            return Degrees.of(normalizeAngle(degrees - 90));
         }
     }
 }

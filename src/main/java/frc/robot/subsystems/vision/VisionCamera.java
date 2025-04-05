@@ -42,7 +42,7 @@ public class VisionCamera {
     private PhotonCameraSim cameraSim;
 
     // SmartDashboard
-    private Optional<EstimatedRobotPose> latestEstimatedPose = Optional.empty();
+    private EstimatedRobotPose latestEstimatedPose = null;
 
     public VisionCamera(String cameraName, Transform3d cameraOffset, int width, int height, int fps,
             double diagonal_fov, double average_pixel_error, double average_pixel_error_std_devs,
@@ -65,6 +65,8 @@ public class VisionCamera {
             cameraProperties.setLatencyStdDevMs(average_latency_std_devs);
 
             this.cameraSim = new PhotonCameraSim(this.camera, cameraProperties);
+
+            this.cameraSim.setMaxSightRange(effectiveRange);
             // this.cameraSim.enableDrawWireframe(true);
             visionSim.addCamera(this.cameraSim, this.cameraOffset);
         }
@@ -82,80 +84,68 @@ public class VisionCamera {
             return;
         }
 
+        double latestTiemstamp = -1;
+        EstimatedRobotPose latestPose = null;
+
+
         for (PhotonPipelineResult result : photonResults) {
             robotEstimate = photonPoseEstimator.update(result);
-            updateEstimationStdDevs(robotEstimate, result.getTargets());
 
-            robotEstimate.ifPresent(est -> {
-                latestEstimatedPose = Optional.ofNullable(est);
+            if (robotEstimate.isEmpty()) {
+                continue;
+            }
 
-                RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, getEstimationStdDevs());
-            });
+            EstimatedRobotPose foundRobotEstimate = robotEstimate.get();
+            
+            if (foundRobotEstimate.timestampSeconds > latestTiemstamp) {
+                latestTiemstamp = foundRobotEstimate.timestampSeconds;
+                latestPose = foundRobotEstimate;
+            }
+
+            updateEstimationStdDevs(foundRobotEstimate, result.getTargets());
+            RobotContainer.swerveSubsystem.swerveDrive.addVisionMeasurement(foundRobotEstimate.estimatedPose.toPose2d(), foundRobotEstimate.timestampSeconds, getEstimationStdDevs());
         }
+
+        if (latestPose != null) {
+            latestEstimatedPose = latestPose;
+        }
+
     }
 
-    private void updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose,
+    private void updateEstimationStdDevs(EstimatedRobotPose estimatedPose,
             List<PhotonTrackedTarget> targets) {
-        if (estimatedPose.isEmpty() || targets.size() == 0) {
-            currentStdDevs = Constants.VisionConstants.VISION_SINGLE_TAG_STD_DEVS;
-        } else {
-            Matrix<N3, N1> temporaryStdDevs = Constants.VisionConstants.VISION_SINGLE_TAG_STD_DEVS;
-            int validTargets = 0;
-            double averageDistance, averageAmbiguity;
-            averageDistance = averageAmbiguity = 0;
+        Matrix<N3, N1> temporaryStdDevs = Constants.VisionConstants.VISION_SINGLE_TAG_STD_DEVS;
+        int validTargets = 0;
+        double averageDistance, averageAmbiguity;
+        averageDistance = averageAmbiguity = 0;
 
-            for (var target : targets) {
-                Optional<Pose3d> targetPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
-                if (targetPose.isEmpty()) {
-                     
-                    continue;
-                }
-
-                validTargets++;
-                averageAmbiguity += target.getPoseAmbiguity();
-                averageDistance += targetPose.get().getTranslation().getDistance(new Translation3d(RobotContainer.swerveSubsystem.getPose().getTranslation()));
+        for (var target : targets) {
+            Optional<Pose3d> targetPose = photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
+            if (targetPose.isEmpty()) {
+                    
+                continue;
             }
 
-            averageDistance /= validTargets;
-            averageAmbiguity /= validTargets;
-
-            if (validTargets > 1) {
-                temporaryStdDevs = Constants.VisionConstants.VISION_MULTI_TAG_STD_DEVS;
-            }
-
-            if (validTargets == 1 && averageDistance > effectiveRange) {
-                temporaryStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-            } else {
-                double distanceMultiplier = Math.pow(averageDistance, 2)
-                        / Constants.VisionConstants.TARGET_DISTANCE_STD_DEVS_DIVISOR;
-
-                /*
-                ChassisSpeeds robotVelocity = RobotContainer.swerveSubsystem.swerveDrive.getRobotVelocity();
-                double translationVelocityMultiplier = Math.sqrt(
-                        Math.pow(robotVelocity.vxMetersPerSecond, 2) +
-                                Math.pow(robotVelocity.vyMetersPerSecond, 2))
-                        / Constants.VisionConstants.TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR;
-                double rotationalVelocityMultiplier = Math.abs(Units.radiansToDegrees(robotVelocity.omegaRadiansPerSecond))
-                        / Constants.VisionConstants.TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR;
-
-                double targetCountMultiplier = Math.max(
-                        ((1 / validTargets) / Constants.VisionConstants.TARGET_COUNT_STD_DEVS_DIVISOR - 0), 0);
-
-                double targetAmbiguity = averageAmbiguity / Constants.VisionConstants.TARGET_AMBIGUITY_STD_DEVS_DIVISOR;
-
-                temporaryStdDevs = temporaryStdDevs.times(1 + ((distanceMultiplier + translationVelocityMultiplier
-                        + rotationalVelocityMultiplier + targetCountMultiplier + targetAmbiguity) * Constants.VisionConstants.OVERALL_MULTIPLIER));
-                
-                */
-
-                temporaryStdDevs.times(1 + distanceMultiplier);
-                if (temporaryStdDevs.get(0, 0) > Constants.VisionConstants.CUTOFF) {
-                    temporaryStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-                }
-            }
-
-            currentStdDevs = temporaryStdDevs;
+            validTargets++;
+            averageAmbiguity += target.getPoseAmbiguity();
+            averageDistance += targetPose.get().getTranslation().getDistance(new Translation3d(RobotContainer.swerveSubsystem.getPose().getTranslation()));
         }
+
+        averageDistance /= validTargets;
+        averageAmbiguity /= validTargets;
+
+        if (validTargets > 1) {
+            temporaryStdDevs = Constants.VisionConstants.VISION_MULTI_TAG_STD_DEVS;
+        }
+
+        if (validTargets == 1 && averageDistance > effectiveRange) {
+            temporaryStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        } else {
+            temporaryStdDevs = temporaryStdDevs.times(1 + (Math.pow(averageDistance, 2) / 30));
+        }
+
+        currentStdDevs = temporaryStdDevs;
+        
 
     }
 
@@ -167,7 +157,7 @@ public class VisionCamera {
         return camera;
     }
 
-    public Optional<EstimatedRobotPose> getLatestEstimatedPose() {
+    public EstimatedRobotPose getLatestEstimatedPose() {
         return latestEstimatedPose;
     }
 

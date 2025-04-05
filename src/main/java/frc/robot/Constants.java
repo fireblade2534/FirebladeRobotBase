@@ -210,13 +210,13 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.01;
+      public static final double D = 0.02;
     }
 
     public static class HeadingPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.01;
+      public static final double D = 0.02;
     }
 
     public static class WheelConstants {
@@ -224,8 +224,8 @@ public final class Constants {
       public static final double DIAMETER = 4; // Inches
     }
 
-    public static final double TRANSLATION_ZERO_THRESHOLD = 0.1; // Feet/Second
-    public static final double ROTATION_ZERO_THRESHOLD = 0.1; // Degrees/Second
+    public static final double TRANSLATION_ZERO_THRESHOLD = 0.05; // Feet/Second
+    public static final double ROTATION_ZERO_THRESHOLD = 0.05; // Degrees/Second
 
 
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
@@ -240,6 +240,7 @@ public final class Constants {
     public static final double MASS = 115; // Pounds
     public static final double WIDTH = 2.58333333; // Feet
     public static final double LENGTH = 3.41666667; // Feet
+    public static final double HEIGHT_OFF_GROUND = 0.033; // Feet
     public static final double MAX_SPEED = 24; // Feet/Second
     public static final double MAX_ACHIEVABLE_SPEED = 24; // Feet/Second
     public static final double MAX_ACCELERATION = 7.5; // Feet/Second
@@ -289,7 +290,7 @@ public final class Constants {
       public static final double ROLL = 0; // Degrees
       public static final double PITCH = 0; // Degrees
       public static final double YAW = 28; // Degrees
-      public static final double EFFECTIVE_RANGE = 5; // Meters
+      public static final double EFFECTIVE_RANGE = 12; // Meters
 
       public static class CameraProperties {
         public static final int WIDTH = 1280; // Pixels
@@ -311,18 +312,22 @@ public final class Constants {
 
           public static class L1 {
             public static double MAX_HEIGHT = 1.50919; // Feet
+            public static double BRANCH_ANGLE = 35; // Degrees
           }
 
           public static class L2 {
             public static double MAX_HEIGHT = 2.65748; // Feet
+            public static double BRANCH_ANGLE = 35; // Degrees
           }
 
           public static class L3 {
             public static double MAX_HEIGHT = 3.96982; // Feet
+            public static double BRANCH_ANGLE = 35; // Degrees
           }
           
           public static class L4 {
             public static double MAX_HEIGHT = 6.00394; // Feet
+            public static double BRANCH_ANGLE = 90; // Degrees
           }
 
           public static final double BRANCH_LEFT_OFFSET = 0.563040616798; // Feet
@@ -330,7 +335,7 @@ public final class Constants {
       }
 
       public static class AlignConstants {
-          public static final Transform2d alignOffset = new Transform2d(new Translation2d(-0.75, 0), new Rotation2d(Units.degreesToRadians(0)));
+          public static final Transform2d alignOffset = new Transform2d(new Translation2d(-0.6, 0), new Rotation2d(Units.degreesToRadians(0)));
       }
 
       public static final double CLOSE_DISTANCE = 2; // Feet
@@ -341,11 +346,11 @@ public final class Constants {
       public static int ID = 3;
       public static double MAX_VELOCITY = 120; // Not sure the unit
       public static double MAX_ACCELERATION = 200; // Not sure the unit
-      public static double P = 65;
+      public static double P = 67;
       public static double I = 0;
       public static double D = 1.1;
       public static double S = 0.05; // Volts
-      public static double G = 1.3; // Volts
+      public static double G = 1.35; // Volts
       public static double V = 17; // Volts/(Meters/Second)
       public static double A = 0.2; // Volts/(Meters/Second^2) 
       public static double MASS = 50; // Pounds
@@ -360,11 +365,11 @@ public final class Constants {
       public static double MAX_VELOCITY = 120; // Not sure the unit
       public static double MAX_ACCELERATION = 200; // Not sure the unit
       public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
-      public static double P = 65;
+      public static double P = 66;
       public static double I = 0;
       public static double D = 1.1;
       public static double S = 0.05; // Volts
-      public static double G = 0.6; // Volts
+      public static double G = 0.65; // Volts
       public static double V = 14.52; // Volts/(Meters/Second)
       public static double A = 0.04; // Volts/(Meters/Second^2) 
       public static double MASS = 35; // Pounds
@@ -374,6 +379,7 @@ public final class Constants {
       public static double TOLLERANCE = 0.1; // Feet
     }
 
+    public static final double ZERO_HEIGHTS_ABOVE_BASE = 0.724; // Feet
     public static final double[] HEIGHT_SETPOINTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
   }
 
@@ -395,7 +401,10 @@ public final class Constants {
       public static double MAX_ANGLE = 70; // Degrees
       public static double STARTING_ANGLE = 0; // Degrees
       public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
-      public static double GEAR_RATIO = 48;
+      public static double GEAR_RATIO = 50;
+      public static double CENTER_OFFSET_FOWARD = 0.465485564; // Feet
+      public static double STAGE_OFFSET_UP = 0.958; // Feet
+      public static double TOLLERANCE = 2; // Degrees
     }
 
     public static class Wrist {
@@ -412,17 +421,18 @@ public final class Constants {
       public static double MASS = 15; // Pounds
       public static double MOI = 0.05; // Moment of innertia jKgMetersSquared
       public static double GEAR_RATIO = 400;
+      public static double TOLLERANCE = 2; // Degrees
     }
 
-    public static double LENGTH = 2.15; // Feet
+    public static double LENGTH = 2; // Feet
     
   }
 
   public static class DebugConstants {
     public static boolean DEBUG_VISION = true;
-    public static boolean DEBUG_ELEVATOR = false;
-    public static boolean DEBUG_ARM = false;
-    public static boolean DEBUG_WRIST = false;
+    public static boolean DEBUG_ELEVATOR = true;
+    public static boolean DEBUG_ARM = true;
+    public static boolean DEBUG_WRIST = true;
     public static boolean ANIMATE_ROBOT = true;
   }
 }

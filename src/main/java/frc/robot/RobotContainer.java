@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
 import frc.robot.commands.ControlShoulderCommand;
@@ -28,7 +29,7 @@ import frc.robot.subsystems.PathfindingSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utilities.Controller;
+import frc.robot.utilities.CustomCommandXboxController;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
@@ -42,13 +43,13 @@ public class RobotContainer {
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   
   // Initalize driver controller and stream
-  public static final CommandJoystick driverController = new CommandJoystick(Constants.DriverConstants.PORT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
+  public static final CustomCommandXboxController driverController = new CustomCommandXboxController(Constants.DriverConstants.PORT, Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT, Constants.DriverConstants.CONTROL_EXPONENT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
 
   public static final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.swerveDrive,
-      () -> Controller.mapAxis(-driverController.getY(), Constants.DriverConstants.CONTROL_EXPONENT),
-      () -> Controller.mapAxis(-driverController.getX(), Constants.DriverConstants.CONTROL_EXPONENT))
-      .withControllerRotationAxis(() -> -Controller.mapAxis(driverController.getZ(), Constants.DriverConstants.CONTROL_EXPONENT) * Constants.DriverConstants.ROTATION_SCALE)
-      .deadband(Math.pow(Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT))
+      () -> -driverController.getLeftY(),
+      () -> -driverController.getLeftX())
+      .withControllerRotationAxis(() -> -driverController.getRightX() * Constants.DriverConstants.ROTATION_SCALE)
+      .deadband(0)
       .scaleTranslation(Constants.DriverConstants.TRANSLATION_SCALE)
       .allianceRelativeControl(false);
 

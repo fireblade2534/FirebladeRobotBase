@@ -84,6 +84,7 @@ public class Reef {
 
         for (int index = 0; index < heightsList.length; index++) {
             double heightDiff = Math.abs(heightsList[index] - Units.metersToFeet(elevatorHeight));
+            System.out.println("OK SO AT HEIGHT " + index + " OF " + Units.metersToFeet(elevatorHeight) + " THE DIFF IS " + heightDiff);
             if (heightDiff < closestDistance) {
                 closestDistance = heightDiff;
                 closestIndex = index;
@@ -91,6 +92,24 @@ public class Reef {
         }
 
         return closestIndex;
+    }
+
+
+
+    public static double getBranchAngle(int branchLevel) {
+        switch(branchLevel) {
+            case 0:
+                return Constants.ReefConstants.FieldConstants.L1.BRANCH_ANGLE;
+            case 1:
+                return Constants.ReefConstants.FieldConstants.L2.BRANCH_ANGLE;
+            case 2:
+                return Constants.ReefConstants.FieldConstants.L3.BRANCH_ANGLE;
+            case 3:
+                return Constants.ReefConstants.FieldConstants.L4.BRANCH_ANGLE;
+            default:
+                System.err.println("Unknown branch level " + branchLevel + ". Returning default of 35");
+                return 35;
+        }
     }
 
 
