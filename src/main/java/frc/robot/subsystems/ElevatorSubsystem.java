@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.MathUtilities;
 
 // Credit to https://www.youtube.com/watch?v=_2fPVYDrq_E for the great tutorial
@@ -127,11 +128,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public double getStage1Setpoint() {
-        return stage1Controller.getSetpoint().position;
+        return stage1Controller.getGoal().position;
     }
 
     public double getStage2Setpoint() {
-        return stage2Controller.getSetpoint().position;
+        return stage2Controller.getGoal().position;
     }
 
     public void setStage1Setpoint(double height) {
@@ -179,6 +180,22 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
         return elevatorLocalHeight >= 0 && elevatorLocalHeight <= maxHeight;
+    }
+
+    public void setOverallHeight(double targetHeight) {
+        targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset();
+
+        targetHeight = MathUtil.clamp(targetHeight, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+
+        double totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+
+        double targetRatio = targetHeight / totalHeight;
+
+        double target1Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
+        double target2Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+
+        setStage1Setpoint(target1Height);
+        setStage2Setpoint(target2Height);
     }
 
     @Override

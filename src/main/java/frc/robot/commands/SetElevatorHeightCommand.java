@@ -7,13 +7,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class SetElevatorHeightCommand extends Command {
-   private final double totalHeight;
-   private final double targetRatio;
-
-   private final double target1Height;
-   private final double target2Height;
    private final double targetHeight;
-
 
     /**
      * 
@@ -22,25 +16,13 @@ public class SetElevatorHeightCommand extends Command {
     public SetElevatorHeightCommand(double targetHeight) {
         this.targetHeight = targetHeight;
 
-        targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset();
-
-        targetHeight = MathUtil.clamp(targetHeight, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
-
-        this.totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
-
-        this.targetRatio = targetHeight / totalHeight;
-
-        this.target1Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * this.targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
-        this.target2Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * this.targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
-
         addRequirements(RobotContainer.elevatorSubsystem);
     }
 
     @Override
     public void initialize() {
-        System.out.println("Setting elevator height to " + (this.target1Height + this.target2Height) + " m from a raw command of " + this.targetHeight + " m");
-        RobotContainer.elevatorSubsystem.setStage1Setpoint(this.target1Height);
-        RobotContainer.elevatorSubsystem.setStage2Setpoint(this.target2Height);
+        RobotContainer.elevatorSubsystem.setOverallHeight(this.targetHeight);
+        System.out.println("Setting elevator height to " + (RobotContainer.elevatorSubsystem.getStage1Setpoint() + RobotContainer.elevatorSubsystem.getStage2Setpoint()) + " m from a raw command of " + this.targetHeight + " m");
     }
 
     @Override
@@ -50,11 +32,11 @@ public class SetElevatorHeightCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        if (!MathUtil.isNear(this.target1Height, RobotContainer.elevatorSubsystem.getStage1Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage1.TOLLERANCE))){
+        if (!MathUtil.isNear(RobotContainer.elevatorSubsystem.getStage1Setpoint(), RobotContainer.elevatorSubsystem.getStage1Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage1.TOLLERANCE))){
             return false;
         }
 
-        if (!MathUtil.isNear(this.target2Height, RobotContainer.elevatorSubsystem.getStage2Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage2.TOLLERANCE))){
+        if (!MathUtil.isNear(RobotContainer.elevatorSubsystem.getStage2Setpoint(), RobotContainer.elevatorSubsystem.getStage2Height(),Units.feetToMeters(Constants.ElevatorConstants.Stage2.TOLLERANCE))){
             return false;
         }
 

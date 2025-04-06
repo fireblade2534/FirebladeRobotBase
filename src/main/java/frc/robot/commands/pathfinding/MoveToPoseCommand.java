@@ -72,7 +72,7 @@ public class MoveToPoseCommand extends Command {
 
         double heading = this.headingController.calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
 
-        RobotContainer.swerveSubsystem.swerveDrive.drive(new Translation2d(translationX, translationY), heading, true, false);
+        RobotContainer.swerveSubsystem.swerveDrive.drive(new Translation2d(translationX / 2, translationY / 2), heading, true, true);
     }
 
     @Override

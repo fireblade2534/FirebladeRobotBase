@@ -1,8 +1,8 @@
  - Fix the arm system so its zero point is behind the physical rotation limits of the arm
  - Clean up the whole code base
- - Allow scoring on L1
+ - Allow scoring on L1   DONE
  - Allow scoring on L2   DONE
  - Add control over the intake and outtake
  - Add timeouts to some commands
- - Fix the damn controls lol (they were made for a joystick and not a controller)
+ - Fix the damn controls lol (they were made for a joystick and not a controller)   DONE
  - Randomize the postion alittle bit on L1 so that more coral can be dropped

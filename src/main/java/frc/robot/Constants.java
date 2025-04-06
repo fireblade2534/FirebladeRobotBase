@@ -259,12 +259,11 @@ public final class Constants {
     public static final int PORT = 0;
     public static final double DEADBAND = 0.1;
     public static final double TRANSLATION_SCALE = 1;
-    public static final double ROTATION_SCALE = 1;
+    public static final double ROTATION_SCALE = 0.9;
     public static final int CONTROL_EXPONENT = 2;
-    public static final double CONTROL_STAGE1_SPEED = 1; // Feet/Second
-    public static final double CONTROL_STAGE2_SPEED = 1; // Feet/Second
+    public static final double CONTROL_ELEVATOR_SPEED = 1; // Feet/Second
     public static final double CONTROL_SHOULDER_SPEED = 50; // Degrees/Second
-    public static final double CONTROL_WRIST_SPEED = 50; // Degrees/Second
+    public static final double CONTROL_WRIST_SPEED = 60; // Degrees/Second
   }
 
   public static final boolean USE_WELDED_FIELD = false;
@@ -312,9 +311,9 @@ public final class Constants {
 
           public static class L1 {
             public static double MAX_HEIGHT = 1.50919; // Feet
-            public static double SCORE_HEIGHT = 3.7; // Feet
-            public static double SCORE_ANGLE = -45; // Degrees
-            public static double SCORE_OFFSET = 0; // Feet
+            public static double SCORE_HEIGHT = 3.4; // Feet
+            public static double SCORE_ANGLE = -30; // Degrees
+            public static double SCORE_OFFSET = 0.25; // Feet
           }
 
           public static class L2 {

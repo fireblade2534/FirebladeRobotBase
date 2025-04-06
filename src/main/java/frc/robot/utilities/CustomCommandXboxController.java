@@ -1,10 +1,14 @@
 package frc.robot.utilities;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 // Heavily inspired by https://github.com/frc4451/Riptide2025/blob/main/src/main/java/frc/robot/util/CommandCustomXboxController.java
 public class CustomCommandXboxController extends CommandXboxController {
@@ -42,6 +46,46 @@ public class CustomCommandXboxController extends CommandXboxController {
         return applyExponent(applyJoystickDeadband(super.getRightY()), rightExponent);
     }
 
+    public Trigger povUpDirection() {
+        return new Trigger(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return pov(0).getAsBoolean() || pov(45).getAsBoolean() || pov(315).getAsBoolean();
+            }
+        });
+    }
+
+    public Trigger povDownDirection() {
+        return new Trigger(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return pov(180).getAsBoolean() || pov(225).getAsBoolean() || pov(135).getAsBoolean();
+            }
+        });
+    }
+
+    public Trigger povRightDirection() {
+        return new Trigger(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return pov(90).getAsBoolean() || pov(45).getAsBoolean() || pov(135).getAsBoolean();
+            }
+        });
+    }
+
+    public Trigger povLeftDirection() {
+        return new Trigger(new BooleanSupplier() {
+
+            @Override
+            public boolean getAsBoolean() {
+                return pov(270).getAsBoolean() || pov(315).getAsBoolean() || pov(225).getAsBoolean();
+            }
+        });
+    }
+
     public Command setRumbleCommand(RumbleType type, double strength) {
         return Commands.startEnd(() -> super.setRumble(type, strength), () -> super.setRumble(type, 0));
     }
@@ -52,6 +96,10 @@ public class CustomCommandXboxController extends CommandXboxController {
 
     public Command setRumbleBlinkCommand(RumbleType type, double strength, double secondsOn, double secondsOff, int loops) {
         return Commands.repeatingSequence(setRumbleSecondsCommand(type, strength, secondsOn), Commands.waitSeconds(secondsOff)).withTimeout((secondsOn + secondsOff) * loops);
+    }
+
+    public Trigger twoButtonTrigger(int button1, int button2) {
+        return new TwoButtonTrigger(new JoystickButton(super.getHID(), button1), new JoystickButton(super.getHID(), button2));
     }
 
     private double applyExponent(double value, double exponent) {

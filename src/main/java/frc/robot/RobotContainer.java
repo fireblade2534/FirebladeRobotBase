@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ControlElevatorBothStages;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
 import frc.robot.commands.ControlShoulderCommand;
@@ -41,9 +42,11 @@ public class RobotContainer {
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
-  
+
   // Initalize driver controller and stream
-  public static final CustomCommandXboxController driverController = new CustomCommandXboxController(Constants.DriverConstants.PORT, Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT, Constants.DriverConstants.CONTROL_EXPONENT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
+  public static final CustomCommandXboxController driverController = new CustomCommandXboxController(
+      Constants.DriverConstants.PORT, Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT,
+      Constants.DriverConstants.CONTROL_EXPONENT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
 
   public static final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.swerveDrive,
       () -> -driverController.getLeftY(),
@@ -56,28 +59,11 @@ public class RobotContainer {
   // Auto systems
   public SendableChooser<Command> autoChooser;
 
-  /*
-   * Command groups
-   */
-  private final AutoAlignWithReefCommandGroup autoAlignReef0;
-  private final AutoAlignWithReefCommandGroup autoAlignReef1;
-  private final AutoAlignWithReefCommandGroup autoAlignReef2;
-  private final AutoAlignWithReefCommandGroup autoAlignReef3;
-  private final AutoAlignWithReefCommandGroup autoAlignReef4;
-  private final AutoAlignWithReefCommandGroup autoAlignReef5;
 
   public RobotContainer() {
     System.out.println("Configuring robot container");
     configureAutos();
-    // PathfindingCommand.warmupCommand().schedule();
 
-    autoAlignReef0 = new AutoAlignWithReefCommandGroup(0);
-    autoAlignReef1 = new AutoAlignWithReefCommandGroup(1);
-    autoAlignReef2 = new AutoAlignWithReefCommandGroup(2);
-    autoAlignReef3 = new AutoAlignWithReefCommandGroup(3);
-    autoAlignReef4 = new AutoAlignWithReefCommandGroup(4);
-    autoAlignReef5 = new AutoAlignWithReefCommandGroup(5);
-    
     configureBindings();
 
     if (Robot.isSimulation()) {
@@ -85,28 +71,28 @@ public class RobotContainer {
     }
   }
 
-  private void configureAutos(){
+  private void configureAutos() {
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
-  
+
   private void configureBindings() {
     Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveFieldOrientedSupplier(driveAngularVelocity);
 
     /*
      * Shoulder controls
      */
-    driverController.pov(0).whileTrue(new ControlShoulderCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
-    driverController.pov(180).whileTrue(new ControlShoulderCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    driverController.povUpDirection().whileTrue(new ControlShoulderCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    driverController.povDownDirection().whileTrue(new ControlShoulderCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
 
     /*
      * Wrist controls
      */
-    driverController.pov(90).whileTrue(new ControlWristCommand(Constants.DriverConstants.CONTROL_WRIST_SPEED));
-    driverController.pov(270).whileTrue(new ControlWristCommand(-Constants.DriverConstants.CONTROL_WRIST_SPEED));
-    
+    driverController.povRightDirection().whileTrue(new ControlWristCommand(Constants.DriverConstants.CONTROL_WRIST_SPEED));
+    driverController.povLeftDirection().whileTrue(new ControlWristCommand(-Constants.DriverConstants.CONTROL_WRIST_SPEED));
+
     /*
      * Elevator controls
      */
@@ -117,33 +103,35 @@ public class RobotContainer {
     //driverController.button(4).whileTrue(new ControlElevatorStage2Command(-Units.feetToMeters(Constants.DriverConstants.CONTROL_STAGE2_SPEED)));
 
     /*
-     * Elevator presets
+     * Elevator presets  
      */
-    driverController.button(5).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[0])));
-    driverController.button(3).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[1])));
+    //driverController.button(5)
+    //    .onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[0])));
+    //driverController.button(3)
+    //    .onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[1])));
 
-    driverController.button(6).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[2])));
-    driverController.button(4).onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[3])));
+    //driverController.button(6)
+    //    .onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[2])));
+    //driverController.button(4)
+    //    .onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[3])));
 
-    /*
-     * Test auto align command
+    /* 
+     * Auto score
      */
 
-     driverController.button(7).onTrue(autoAlignReef0);
-     driverController.button(8).onTrue(autoAlignReef1);
-     driverController.button(9).onTrue(autoAlignReef2);
-     driverController.button(10).onTrue(autoAlignReef3);
-     driverController.button(11).onTrue(autoAlignReef4);
-     driverController.button(12).onTrue(autoAlignReef5);
+    driverController.twoButtonTrigger(4, 5).onTrue(new AutoScoreCoralCommand(false, 0));
+    driverController.twoButtonTrigger(2, 5).onTrue(new AutoScoreCoralCommand(false, 1));
+    driverController.twoButtonTrigger(1, 5).onTrue(new AutoScoreCoralCommand(false, 2));
+    driverController.twoButtonTrigger(3, 5).onTrue(new AutoScoreCoralCommand(false, 3));
 
-     /*
-      * Testing stuff
-      */
+    driverController.twoButtonTrigger(4, 6).onTrue(new AutoScoreCoralCommand(true, 0));
+    driverController.twoButtonTrigger(2, 6).onTrue(new AutoScoreCoralCommand(true, 1));
+    driverController.twoButtonTrigger(1, 6).onTrue(new AutoScoreCoralCommand(true, 2));
+    driverController.twoButtonTrigger(3, 6).onTrue(new AutoScoreCoralCommand(true, 3));
 
-      driverController.button(1).onTrue(new AutoScoreCoralCommand(false));
+    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-
-     swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    elevatorSubsystem.setDefaultCommand(new ControlElevatorBothStages(() -> -driverController.getRightY()));
   }
 
   public Command getAutonomousCommand() {

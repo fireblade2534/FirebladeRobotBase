@@ -20,11 +20,15 @@ import frc.robot.utilities.MathUtilities;
 import frc.robot.utilities.Reef;
 
 public class AutoScoreCoralCommand extends Command {
-    private final boolean left;
+    private final boolean right;
+    private final int branchIndex;
     private SequentialCommandGroup commands;
 
-    public AutoScoreCoralCommand(boolean left) {
-        this.left = left;
+    public AutoScoreCoralCommand(boolean right, int branchIndex) {
+        this.right = right;
+        this.branchIndex = branchIndex;
+
+		addRequirements(RobotContainer.armSubsystem, RobotContainer.elevatorSubsystem, RobotContainer.swerveSubsystem);
     }
 
     @Override
@@ -34,13 +38,12 @@ public class AutoScoreCoralCommand extends Command {
         int closestTagID = Reef.getClosestReef(RobotContainer.swerveSubsystem.getPose());
 
         if (closestTagID != -1) {
-            int branchIndex = Reef.getInferedBranchLevel(RobotContainer.elevatorSubsystem.getCarpetElevatorHeight());
-            System.out.println("Infering branch level " + (branchIndex + 1));
+            System.out.println("Scoring on level " + (branchIndex + 1));
 
             Pose2d tagPose = Reef.getReefIDPose(closestTagID, true);
 
             if (branchIndex != 0) {
-                Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, left);
+                Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, right);
 
                 // Get the angle of the branch and its perpendicular angle
                 double branchAngle = Reef.getBranchAngle(branchIndex);
@@ -95,9 +98,9 @@ public class AutoScoreCoralCommand extends Command {
                 this.commands.addCommands(new ParallelCommandGroup( // MAKE THIS STUFF HAVE TIMEOUTS
                         new SetElevatorHeightCommand(elevatorTargetHeight),
                         new SetArmConfigurationCommand(scoringAngle + Constants.ReefConstants.LIFT_ANGLE, 90.0, true)),
-                        new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.05, 1)),
+                        new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1)),
                         new ParallelCommandGroup(new SetArmConfigurationCommand(scoringAngle, 90.0, true)),
-                        new ParallelCommandGroup(new MoveToPoseCommand(pullBackPose, 0.05, 1))); // Make it also be ejecting at the same time
+                        new ParallelCommandGroup(new MoveToPoseCommand(pullBackPose, 0.08, 1))); // Make it also be ejecting at the same time
             } else {
                 Pose2d newRobotPose = tagPose.plus(new Transform2d(
                         -(Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
@@ -111,7 +114,7 @@ public class AutoScoreCoralCommand extends Command {
                                                 .feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_HEIGHT)),
                                         new SetArmConfigurationCommand(
                                                 Constants.ReefConstants.FieldConstants.L1.SCORE_ANGLE, 0.0, true)),
-                                new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.05, 1))); // Make it also be ejecting at the same time
+                                new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1))); // Make it also be ejecting at the same time
             }
 
         } else {
