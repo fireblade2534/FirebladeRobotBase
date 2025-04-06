@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,36 +14,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.VisionCamera;
+import frc.robot.utilities.MathUtilities;
 
 public class SmartDashboardSubsystem extends SubsystemBase {
     public SmartDashboardSubsystem() {
         SmartDashboard.putData(CommandScheduler.getInstance());
-
-        
     }
 
-    public static double[] convertPose3dToNumbers(Pose3d pose) {
-        return new double[] {
-            pose.getX(),
-            pose.getY(),
-            pose.getZ(),
-            pose.getRotation().getQuaternion().getW(),
-            pose.getRotation().getQuaternion().getX(),
-            pose.getRotation().getQuaternion().getY(),
-            pose.getRotation().getQuaternion().getZ()
-        };
-    }
+    @Override
+    public void simulationPeriodic() {
+        Logger.recordOutput("FieldSimulation/Algae", 
+            SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+        Logger.recordOutput("FieldSimulation/Coral", 
+            SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
 
-    public static double[] convertPose2dToNumbers(Pose2d pose) {
-        return new double[] {
-            pose.getX(),
-            pose.getY(),
-            pose.getRotation().getDegrees()
-        };
+        if (Constants.DebugConstants.DEBUG_SIMULATION) {
+            SmartDashboard.putBoolean("Simulation/Intake/Enabled", RobotContainer.simulationSubsystem.isPickupEnabled()); 
+        }
+
+        if (Constants.DebugConstants.ANIMATE_ROBOT) {
+            if (RobotContainer.simulationSubsystem.intakeSim.containsCoral()) {
+                SmartDashboard.putNumberArray("Simulation/Animate/Coral", MathUtilities.PoseUtilities.convertPose3dToNumbers(RobotContainer.simulationSubsystem.getEndCoralPose()));
+            } else {
+                SmartDashboard.putNumberArray("Simulation/Animate/Coral", MathUtilities.PoseUtilities.convertPose3dToNumbers(new Pose3d()));
+            }
+            
+        }
     }
 
     @Override
     public void periodic() {
+        // Stuff here should always be sent to maintain basic functionality
+        SmartDashboard.putBoolean("Arm/Intake/HasCoral", RobotContainer.intakeSubsystem.hasCoral());
+
         if (Constants.DebugConstants.DEBUG_VISION == true) {
 
             for (VisionCamera camera : RobotContainer.visionSubsystem.limelightCameras) {
@@ -50,11 +55,18 @@ public class SmartDashboardSubsystem extends SubsystemBase {
 
                 EstimatedRobotPose estimatedRobotPose = camera.getLatestEstimatedPose();
                 if (estimatedRobotPose != null) {
-                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", convertPose3dToNumbers(estimatedRobotPose.estimatedPose));
+                    SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", MathUtilities.PoseUtilities.convertPose3dToNumbers(estimatedRobotPose.estimatedPose));
                 }
             }
         }
+        
+        if (Constants.DebugConstants.DEBUG_INTAKE == true) {
+            SmartDashboard.putNumber("Arm/Intake/IntakeMotorPercent", RobotContainer.intakeSubsystem.getIntakeSpeedPercent());
+        }
+
         if (Constants.DebugConstants.DEBUG_ELEVATOR || Constants.DebugConstants.DEBUG_ARM || Constants.DebugConstants.DEBUG_WRIST || Constants.DebugConstants.ANIMATE_ROBOT) {
+
+            // Get a bunch of values that can be used multiple times
             double stage1Height = RobotContainer.elevatorSubsystem.getStage1Height();
             double stage2Height = RobotContainer.elevatorSubsystem.getStage2Height();
 
@@ -104,11 +116,11 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                     0
                 });
 
-                Pose3d shoulderPose = new Pose3d(0.15, 0, stage1Height + stage2Height + 0.45, new Rotation3d(0, -Units.degreesToRadians(shoulderAngle),0));
-                SmartDashboard.putNumberArray("Arm/Shoulder/Position", convertPose3dToNumbers(shoulderPose));
+                Pose3d shoulderPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(0, -Units.degreesToRadians(shoulderAngle),0));
+                SmartDashboard.putNumberArray("Arm/Shoulder/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(shoulderPose));
 
-                Pose3d wristPose = new Pose3d(0.15, 0, stage1Height + stage2Height + 0.45, new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
-                SmartDashboard.putNumberArray("Arm/Wrist/Position", convertPose3dToNumbers(wristPose));
+                Pose3d wristPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
+                SmartDashboard.putNumberArray("Arm/Wrist/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(wristPose));
                 
             }
         }

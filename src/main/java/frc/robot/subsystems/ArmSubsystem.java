@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -141,32 +143,6 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
-    @Override
-    public void simulationPeriodic() {
-        // Simulate shoulder
-        shoulderArmSim.setInput(shoulderMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-
-        shoulderArmSim.update(0.02);
-
-        shoulderMotorSim.iterate(
-                RotationsPerSecond.of(MathUtilities.ArmUtilities
-                        .convertArmAngleToMotorAngle(Units.radiansToRotations(shoulderArmSim.getVelocityRadPerSec()),
-                                Constants.ArmConstants.Shoulder.GEAR_RATIO)
-                        .in(Rotations)).in(RPM),
-                RoboRioSim.getVInVoltage(), 0.02);
-
-        // Simulate wrist
-        wristDcMotorSim.setInput(wristMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
-
-        wristDcMotorSim.update(0.02);
-
-        wristMotorSim.iterate(MathUtilities.ArmUtilities
-        .convertArmAngleToMotorAngle(wristDcMotorSim.getAngularVelocityRPM(), Constants.ArmConstants.Wrist.GEAR_RATIO).in(Rotations), RoboRioSim.getVInVoltage(), 0.02);
-
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
-                shoulderArmSim.getCurrentDrawAmps() + wristDcMotorSim.getCurrentDrawAmps()));
-    }
-
     public double getShoulderAngle() {
         return Units.rotationsToDegrees(MathUtilities.ArmUtilities.convertMotorAngleToArmAngle(
                 shoulderMotor1Encoder.getPosition(), Constants.ArmConstants.Shoulder.GEAR_RATIO).in(Rotations));
@@ -187,7 +163,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void resetShoulderSetpoint() {
-        setShoulderSetpoint(getShoulderAngle());
+        double shoulderAngle = getShoulderAngle();
+        shoulderController.reset(shoulderAngle);
+        setShoulderSetpoint(shoulderAngle);
     }
 
     public double getWristAngle() {
@@ -213,12 +191,45 @@ public class ArmSubsystem extends SubsystemBase {
         setWristSetpoint(getWristAngle());
     }
 
-    public Command setShoulderAngle(double angle) {
+    public Command setShoulderAngleCommand(double angle) {
         return runOnce(() -> setShoulderSetpoint(angle));
     }
 
+    public Command setWristSpeedCommand(double wristSpeed) {
+        return new RunCommand(() -> setWristSetpoint(getWristSetpoint() + (wristSpeed / 50)), new Subsystem[]{});
+    }
 
+    public Command setShoulderSpeedCommand(double shoulderSpeed) {
+        return new RunCommand(() -> setShoulderSetpoint(getShoulderSetpoint() + (shoulderSpeed / 50)), new Subsystem[]{});
+    }
 
+    @Override
+    public void simulationPeriodic() {
+        // Simulate shoulder
+        shoulderArmSim.setInput(shoulderMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+
+        shoulderArmSim.update(0.02);
+
+        // Iterate in the shoulder motor simulation
+        shoulderMotorSim.iterate(
+                RotationsPerSecond.of(MathUtilities.ArmUtilities
+                        .convertArmAngleToMotorAngle(Units.radiansToRotations(shoulderArmSim.getVelocityRadPerSec()),
+                                Constants.ArmConstants.Shoulder.GEAR_RATIO)
+                        .in(Rotations)).in(RPM),
+                RoboRioSim.getVInVoltage(), 0.02);
+
+        // Simulate wrist
+        wristDcMotorSim.setInput(wristMotorSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+
+        wristDcMotorSim.update(0.02);
+
+        // Iterate on the wrist motor simulation
+        wristMotorSim.iterate(MathUtilities.ArmUtilities
+        .convertArmAngleToMotorAngle(wristDcMotorSim.getAngularVelocityRPM(), Constants.ArmConstants.Wrist.GEAR_RATIO).in(Rotations), RoboRioSim.getVInVoltage(), 0.02);
+
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
+                shoulderArmSim.getCurrentDrawAmps() + wristDcMotorSim.getCurrentDrawAmps()));
+    }
 
     @Override
     public void periodic() {

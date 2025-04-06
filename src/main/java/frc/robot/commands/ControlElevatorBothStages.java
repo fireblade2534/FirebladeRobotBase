@@ -8,7 +8,7 @@ import frc.robot.RobotContainer;
 
 public class ControlElevatorBothStages extends Command {
     private final Supplier<Double> elevatorSpeed;
-    private final double elevatorOffset = RobotContainer.elevatorSubsystem.getPivotPointOffset();
+    private final double elevatorOffset = RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
 
     public ControlElevatorBothStages(Supplier<Double> elevatorSpeed) {
         this.elevatorSpeed = elevatorSpeed;

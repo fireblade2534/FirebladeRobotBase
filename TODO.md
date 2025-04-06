@@ -6,3 +6,6 @@
  - Add timeouts to some commands
  - Fix the damn controls lol (they were made for a joystick and not a controller)   DONE
  - Randomize the postion alittle bit on L1 so that more coral can be dropped
+ - Add auto hang
+ - Redo the vision subsystem
+ - Ensure coral is outaked when scoring

@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.Set;
 
+import org.ironmaple.simulation.SimulatedArena;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
@@ -19,16 +21,16 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ControlElevatorBothStages;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
-import frc.robot.commands.ControlShoulderCommand;
-import frc.robot.commands.ControlWristCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.commands.reef.AutoScoreCoralCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PathfindingSubsystem;
 import frc.robot.subsystems.SmartDashboardSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.simulation.SimulationSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utilities.CustomCommandXboxController;
 import swervelib.SwerveInputStream;
@@ -42,6 +44,8 @@ public class RobotContainer {
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
+  public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  public static SimulationSubsystem simulationSubsystem;
 
   // Initalize driver controller and stream
   public static final CustomCommandXboxController driverController = new CustomCommandXboxController(
@@ -68,6 +72,8 @@ public class RobotContainer {
 
     if (Robot.isSimulation()) {
       visionSubsystem.visionSim.getDebugField();
+
+      simulationSubsystem = new SimulationSubsystem();
     }
   }
 
@@ -84,14 +90,14 @@ public class RobotContainer {
     /*
      * Shoulder controls
      */
-    driverController.povUpDirection().whileTrue(new ControlShoulderCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
-    driverController.povDownDirection().whileTrue(new ControlShoulderCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    driverController.povUpDirection().whileTrue(armSubsystem.setShoulderSpeedCommand(Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
+    driverController.povDownDirection().whileTrue(armSubsystem.setShoulderSpeedCommand(-Constants.DriverConstants.CONTROL_SHOULDER_SPEED));
 
     /*
      * Wrist controls
      */
-    driverController.povRightDirection().whileTrue(new ControlWristCommand(Constants.DriverConstants.CONTROL_WRIST_SPEED));
-    driverController.povLeftDirection().whileTrue(new ControlWristCommand(-Constants.DriverConstants.CONTROL_WRIST_SPEED));
+    driverController.povRightDirection().whileTrue(armSubsystem.setWristSpeedCommand(Constants.DriverConstants.CONTROL_WRIST_SPEED));
+    driverController.povLeftDirection().whileTrue(armSubsystem.setWristSpeedCommand(-Constants.DriverConstants.CONTROL_WRIST_SPEED));
 
     /*
      * Elevator controls
@@ -116,7 +122,7 @@ public class RobotContainer {
     //    .onTrue(new SetElevatorHeightCommand(Units.feetToMeters(Constants.ElevatorConstants.HEIGHT_SETPOINTS[3])));
 
     /* 
-     * Auto score
+     * Auto score coral on the reef
      */
 
     driverController.twoButtonTrigger(4, 5).onTrue(new AutoScoreCoralCommand(false, 0));
@@ -129,8 +135,17 @@ public class RobotContainer {
     driverController.twoButtonTrigger(1, 6).onTrue(new AutoScoreCoralCommand(true, 2));
     driverController.twoButtonTrigger(3, 6).onTrue(new AutoScoreCoralCommand(true, 3));
 
-    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    /*
+     * Intake coral
+     */
+    driverController.button(10).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
+    driverController.button(9).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
+    
 
+    /*
+     * Default commands
+     */
+    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     elevatorSubsystem.setDefaultCommand(new ControlElevatorBothStages(() -> -driverController.getRightY()));
   }
 

@@ -39,6 +39,7 @@ public class AutoScoreCoralCommand extends Command {
 
         if (closestTagID != -1) {
             System.out.println("Scoring on level " + (branchIndex + 1));
+			RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.15).schedule();
 
             Pose2d tagPose = Reef.getReefIDPose(closestTagID, true);
 
@@ -75,7 +76,7 @@ public class AutoScoreCoralCommand extends Command {
                     System.out.println("Invalid elevator requirements for auto score trying backup requirements");
 
                     double branchPivotOffset = Units.feetToMeters(Reef.heightsList[branchIndex])
-                            - RobotContainer.elevatorSubsystem.getPivotPointOffset();
+                            - RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
 
                     horizontalRobotArmDistance = Math
                             .sqrt(Math.pow(Units.feetToMeters(Constants.ArmConstants.LENGTH), 2)
@@ -98,9 +99,9 @@ public class AutoScoreCoralCommand extends Command {
                 this.commands.addCommands(new ParallelCommandGroup( // MAKE THIS STUFF HAVE TIMEOUTS
                         new SetElevatorHeightCommand(elevatorTargetHeight),
                         new SetArmConfigurationCommand(scoringAngle + Constants.ReefConstants.LIFT_ANGLE, 90.0, true)),
-                        new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1)),
+                        new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1).withTimeout(10) ),
                         new ParallelCommandGroup(new SetArmConfigurationCommand(scoringAngle, 90.0, true)),
-                        new ParallelCommandGroup(new MoveToPoseCommand(pullBackPose, 0.08, 1))); // Make it also be ejecting at the same time
+                        new ParallelCommandGroup(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3),new MoveToPoseCommand(pullBackPose, 0.08, 1)));
             } else {
                 Pose2d newRobotPose = tagPose.plus(new Transform2d(
                         -(Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
@@ -114,7 +115,9 @@ public class AutoScoreCoralCommand extends Command {
                                                 .feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_HEIGHT)),
                                         new SetArmConfigurationCommand(
                                                 Constants.ReefConstants.FieldConstants.L1.SCORE_ANGLE, 0.0, true)),
-                                new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1))); // Make it also be ejecting at the same time
+                                new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, 0.08, 1).withTimeout(10) ),
+                                new ParallelCommandGroup(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3))
+                                );
             }
 
         } else {

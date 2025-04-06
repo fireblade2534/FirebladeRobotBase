@@ -33,7 +33,7 @@ import frc.robot.utilities.MathUtilities;
 // Credit to https://www.youtube.com/watch?v=_2fPVYDrq_E for the great tutorial
 
 public class ElevatorSubsystem extends SubsystemBase {
-    
+
     private final SparkMax stage1Motor = new SparkMax(Constants.ElevatorConstants.Stage1.ID, MotorType.kBrushless);
     private final DCMotor stage1Gearbox = DCMotor.getNEO(1);
     private final RelativeEncoder stage1Encoder = stage1Motor.getEncoder();
@@ -63,7 +63,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         stage1Config.idleMode(IdleMode.kBrake); // Brake so the stage doesn't fall
         stage1Config.inverted(false);
         stage1Motor.configure(stage1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
+
         // Configure stage 2 and save it to the motor
         SparkMaxConfig stage2Config = new SparkMaxConfig();
         stage2Config.idleMode(IdleMode.kBrake); // Brake so the stage doesn't fall
@@ -80,25 +80,39 @@ public class ElevatorSubsystem extends SubsystemBase {
          */
 
         // Define the trapizoid profile for the pids
-        TrapezoidProfile.Constraints stage1Constraints = new TrapezoidProfile.Constraints(Constants.ElevatorConstants.Stage1.MAX_VELOCITY, Constants.ElevatorConstants.Stage1.MAX_ACCELERATION);
-        TrapezoidProfile.Constraints stage2Constraints = new TrapezoidProfile.Constraints(Constants.ElevatorConstants.Stage2.MAX_VELOCITY, Constants.ElevatorConstants.Stage2.MAX_ACCELERATION);
+        TrapezoidProfile.Constraints stage1Constraints = new TrapezoidProfile.Constraints(
+                Constants.ElevatorConstants.Stage1.MAX_VELOCITY, Constants.ElevatorConstants.Stage1.MAX_ACCELERATION);
+        TrapezoidProfile.Constraints stage2Constraints = new TrapezoidProfile.Constraints(
+                Constants.ElevatorConstants.Stage2.MAX_VELOCITY, Constants.ElevatorConstants.Stage2.MAX_ACCELERATION);
 
         // Initalize the motor pids
-        stage1Controller = new ProfiledPIDController(Constants.ElevatorConstants.Stage1.P, Constants.ElevatorConstants.Stage1.I, Constants.ElevatorConstants.Stage1.D, stage1Constraints);
-        stage2Controller = new ProfiledPIDController(Constants.ElevatorConstants.Stage2.P, Constants.ElevatorConstants.Stage2.I, Constants.ElevatorConstants.Stage2.D, stage2Constraints);
+        stage1Controller = new ProfiledPIDController(Constants.ElevatorConstants.Stage1.P,
+                Constants.ElevatorConstants.Stage1.I, Constants.ElevatorConstants.Stage1.D, stage1Constraints);
+        stage2Controller = new ProfiledPIDController(Constants.ElevatorConstants.Stage2.P,
+                Constants.ElevatorConstants.Stage2.I, Constants.ElevatorConstants.Stage2.D, stage2Constraints);
 
         // Configure feed foward
-        stage1FeedFoward = new ElevatorFeedforward(Constants.ElevatorConstants.Stage1.S,Constants.ElevatorConstants.Stage1.G,Constants.ElevatorConstants.Stage1.V,Constants.ElevatorConstants.Stage1.A);
-        stage2FeedFoward = new ElevatorFeedforward(Constants.ElevatorConstants.Stage2.S,Constants.ElevatorConstants.Stage2.G,Constants.ElevatorConstants.Stage2.V,Constants.ElevatorConstants.Stage2.A);
+        stage1FeedFoward = new ElevatorFeedforward(Constants.ElevatorConstants.Stage1.S,
+                Constants.ElevatorConstants.Stage1.G, Constants.ElevatorConstants.Stage1.V,
+                Constants.ElevatorConstants.Stage1.A);
+        stage2FeedFoward = new ElevatorFeedforward(Constants.ElevatorConstants.Stage2.S,
+                Constants.ElevatorConstants.Stage2.G, Constants.ElevatorConstants.Stage2.V,
+                Constants.ElevatorConstants.Stage2.A);
 
         /*
          * Initalize simulation
          */
         if (Robot.isSimulation()) {
             System.out.println("Creating elevator simulations");
-            stage1ElevatorSim = new ElevatorSim(stage1Gearbox, Constants.ElevatorConstants.Stage1.GEAR_RATIO, Units.lbsToKilograms(Constants.ElevatorConstants.Stage1.MASS), Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
+            stage1ElevatorSim = new ElevatorSim(stage1Gearbox, Constants.ElevatorConstants.Stage1.GEAR_RATIO,
+                    Units.lbsToKilograms(Constants.ElevatorConstants.Stage1.MASS),
+                    Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), 0,
+                    Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
 
-            stage2ElevatorSim = new ElevatorSim(stage2Gearbox, Constants.ElevatorConstants.Stage2.GEAR_RATIO, Units.lbsToKilograms(Constants.ElevatorConstants.Stage2.MASS), Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
+            stage2ElevatorSim = new ElevatorSim(stage2Gearbox, Constants.ElevatorConstants.Stage2.GEAR_RATIO,
+                    Units.lbsToKilograms(Constants.ElevatorConstants.Stage2.MASS),
+                    Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), 0,
+                    Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
         }
 
     }
@@ -136,27 +150,37 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setStage1Setpoint(double height) {
-        stage1Controller.setGoal(MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)));
+        stage1Controller.setGoal(
+                MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)));
     }
 
     public void setStage2Setpoint(double height) {
-        stage2Controller.setGoal(MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT)));
+        stage2Controller.setGoal(
+                MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT)));
     }
 
     public double getStage1Height() {
-        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(getStage1MotorEncoder(), Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), Constants.ElevatorConstants.Stage1.GEAR_RATIO).in(Meters);
+        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(getStage1MotorEncoder(),
+                Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS),
+                Constants.ElevatorConstants.Stage1.GEAR_RATIO).in(Meters);
     }
 
     public double getStage2Height() {
-        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(getStage2MotorEncoder(), Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), Constants.ElevatorConstants.Stage2.GEAR_RATIO).in(Meters);
+        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(getStage2MotorEncoder(),
+                Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS),
+                Constants.ElevatorConstants.Stage2.GEAR_RATIO).in(Meters);
     }
 
     public double getStage1HeightVelocity() {
-        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(stage1Encoder.getVelocity() / 60, Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), Constants.ElevatorConstants.Stage1.GEAR_RATIO).in(Meters);
+        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(stage1Encoder.getVelocity() / 60,
+                Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS),
+                Constants.ElevatorConstants.Stage1.GEAR_RATIO).in(Meters);
     }
 
     public double getStage2HeightVelocity() {
-        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(stage2Encoder.getVelocity() / 60, Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), Constants.ElevatorConstants.Stage2.GEAR_RATIO).in(Meters);
+        return MathUtilities.ElevatorUtilities.convertRotationsToDistance(stage2Encoder.getVelocity() / 60,
+                Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS),
+                Constants.ElevatorConstants.Stage2.GEAR_RATIO).in(Meters);
     }
 
     public void resetStage1Setpoint() {
@@ -167,32 +191,44 @@ public class ElevatorSubsystem extends SubsystemBase {
         setStage2Setpoint(getStage2Height());
     }
 
-    public double getPivotPointOffset() {
-        return Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE) + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
+    public double getPivotPointOffset(boolean includeGroundHeight) {
+        return ((includeGroundHeight) ? Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) : 0)
+                + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE)
+                + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
     }
 
     public double getCarpetElevatorHeight() {
-        return (getStage1Height() + getStage2Height()) + getPivotPointOffset();
+        return (getStage1Height() + getStage2Height()) + getPivotPointOffset(true);
     }
 
     public boolean checkGlobalHeightPossible(double height) {
-        double elevatorLocalHeight = height - getPivotPointOffset();
 
-        double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+        // Because the elevator even at its lowest is a little bit off the ground its base height has to be subtracted from the overall height to get the local height
+        double elevatorLocalHeight = height - getPivotPointOffset(true);
+
+        double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
+                + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
         return elevatorLocalHeight >= 0 && elevatorLocalHeight <= maxHeight;
     }
 
     public void setOverallHeight(double targetHeight) {
-        targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset();
+        targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
 
-        targetHeight = MathUtil.clamp(targetHeight, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+        targetHeight = MathUtil.clamp(targetHeight, 0,
+                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
+                        + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
 
-        double totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+        double totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
+                + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
 
         double targetRatio = targetHeight / totalHeight;
 
-        double target1Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
-        double target2Height = MathUtil.clamp(Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * targetRatio, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+        double target1Height = MathUtil.clamp(
+                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * targetRatio, 0,
+                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
+        double target2Height = MathUtil.clamp(
+                Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * targetRatio, 0,
+                Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
 
         setStage1Setpoint(target1Height);
         setStage2Setpoint(target2Height);
@@ -206,21 +242,42 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Update every 20 miliseconds
         stage1ElevatorSim.update(0.02);
         stage2ElevatorSim.update(0.02);
-        
-        stage1MotorSim.iterate(MathUtilities.ElevatorUtilities.convertDistanceToRotations(stage1ElevatorSim.getVelocityMetersPerSecond(), Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), Constants.ElevatorConstants.Stage1.GEAR_RATIO).per(Second).in(RPM), RoboRioSim.getVInVoltage(), 0.02);
-        stage2MotorSim.iterate(MathUtilities.ElevatorUtilities.convertDistanceToRotations(stage2ElevatorSim.getVelocityMetersPerSecond(), Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), Constants.ElevatorConstants.Stage2.GEAR_RATIO).per(Second).in(RPM), RoboRioSim.getVInVoltage(), 0.02);
 
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(stage1ElevatorSim.getCurrentDrawAmps() + stage2ElevatorSim.getCurrentDrawAmps()));
+        // Iterate the simulation of both motors
+        stage1MotorSim.iterate(
+                MathUtilities.ElevatorUtilities
+                        .convertDistanceToRotations(stage1ElevatorSim.getVelocityMetersPerSecond(),
+                                Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS),
+                                Constants.ElevatorConstants.Stage1.GEAR_RATIO)
+                        .per(Second).in(RPM),
+                RoboRioSim.getVInVoltage(), 0.02);
+
+        stage2MotorSim.iterate(
+                MathUtilities.ElevatorUtilities
+                        .convertDistanceToRotations(stage2ElevatorSim.getVelocityMetersPerSecond(),
+                                Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS),
+                                Constants.ElevatorConstants.Stage2.GEAR_RATIO)
+                        .per(Second).in(RPM),
+                RoboRioSim.getVInVoltage(), 0.02);
+
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
+                stage1ElevatorSim.getCurrentDrawAmps() + stage2ElevatorSim.getCurrentDrawAmps()));
 
     }
 
     @Override
     public void periodic() {
 
-        double stage1VoltsOutput = MathUtil.clamp(stage1Controller.calculate(getStage1Height()) + stage1FeedFoward.calculateWithVelocities(getStage1HeightVelocity(), stage1Controller.getSetpoint().velocity), -10, 10);
+        double stage1VoltsOutput = MathUtil.clamp(
+                stage1Controller.calculate(getStage1Height()) + stage1FeedFoward
+                        .calculateWithVelocities(getStage1HeightVelocity(), stage1Controller.getSetpoint().velocity),
+                -10, 10);
         stage1Motor.setVoltage(stage1VoltsOutput);
 
-        double stage2VoltsOutput = MathUtil.clamp(stage2Controller.calculate(getStage2Height()) + stage2FeedFoward.calculateWithVelocities(getStage2HeightVelocity(), stage2Controller.getSetpoint().velocity), -10, 10);
+        double stage2VoltsOutput = MathUtil.clamp(
+                stage2Controller.calculate(getStage2Height()) + stage2FeedFoward
+                        .calculateWithVelocities(getStage2HeightVelocity(), stage2Controller.getSetpoint().velocity),
+                -10, 10);
         stage2Motor.setVoltage(stage2VoltsOutput);
 
     }

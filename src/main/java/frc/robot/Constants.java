@@ -210,13 +210,13 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.02;
+      public static final double D = 0.04;
     }
 
     public static class HeadingPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.02;
+      public static final double D = 0.04;
     }
 
     public static class WheelConstants {
@@ -264,6 +264,8 @@ public final class Constants {
     public static final double CONTROL_ELEVATOR_SPEED = 1; // Feet/Second
     public static final double CONTROL_SHOULDER_SPEED = 50; // Degrees/Second
     public static final double CONTROL_WRIST_SPEED = 60; // Degrees/Second
+    public static final double INTAKE_SPEED = -0.9; // Percent
+    public static final double OUTTAKE_SPEED = 0.9; // Percent
   }
 
   public static final boolean USE_WELDED_FIELD = false;
@@ -289,7 +291,7 @@ public final class Constants {
       public static final double ROLL = 0; // Degrees
       public static final double PITCH = 0; // Degrees
       public static final double YAW = 28; // Degrees
-      public static final double EFFECTIVE_RANGE = 12; // Meters
+      public static final double EFFECTIVE_RANGE = 6; // Meters
 
       public static class CameraProperties {
         public static final int WIDTH = 1280; // Pixels
@@ -311,9 +313,9 @@ public final class Constants {
 
           public static class L1 {
             public static double MAX_HEIGHT = 1.50919; // Feet
-            public static double SCORE_HEIGHT = 3.4; // Feet
+            public static double SCORE_HEIGHT = 3.3; // Feet
             public static double SCORE_ANGLE = -30; // Degrees
-            public static double SCORE_OFFSET = 0.25; // Feet
+            public static double SCORE_OFFSET = 0.2; // Feet
           }
 
           public static class L2 {
@@ -340,7 +342,7 @@ public final class Constants {
       }
 
       public static final double LIFT_ANGLE = 30;
-      public static final double CLOSE_DISTANCE = 2; // Feet
+      public static final double CLOSE_DISTANCE = 13; // Feet
   }
 
   public static class ElevatorConstants {
@@ -381,7 +383,7 @@ public final class Constants {
       public static double TOLLERANCE = 0.2; // Feet
     }
 
-    public static final double ZERO_HEIGHTS_ABOVE_BASE = 0.724; // Feet
+    public static final double ZERO_HEIGHTS_ABOVE_BASE = 0.520; // Feet
     public static final double[] HEIGHT_SETPOINTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
   }
 
@@ -395,7 +397,7 @@ public final class Constants {
       public static double I = 0;
       public static double D = 0.05;
       public static double S = 0.05; // Volts
-      public static double G = 3.52; // Volts
+      public static double G = 3.51; // Volts
       public static double V = 0.01; // Volts/(Degrees/Second)
       public static double A = 0.02; // Volts/(Degrees/Second^2) 
       public static double MASS = 10; // Pounds
@@ -404,7 +406,7 @@ public final class Constants {
       public static double STARTING_ANGLE = 0; // Degrees
       public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
       public static double GEAR_RATIO = 50;
-      public static double CENTER_OFFSET_FOWARD = 0.465485564; // Feet
+      public static double CENTER_OFFSET_FOWARD = 0.492126; // Feet
       public static double STAGE_OFFSET_UP = 0.958; // Feet
       public static double TOLLERANCE = 3; // Degrees
     }
@@ -426,6 +428,19 @@ public final class Constants {
       public static double TOLLERANCE = 2; // Degrees
     }
 
+    public static class Intake {
+      public static int ID = 6;
+
+      public static class Simulation {
+        public static double WIDTH = 0.7; // Feet
+        public static double LENGTH = 0.5; // Feet
+      }
+    }
+
+    public static class IntakeSensor {
+      public static int ID = 0;
+    }
+
     public static double LENGTH = 2; // Feet
     
   }
@@ -435,6 +450,8 @@ public final class Constants {
     public static boolean DEBUG_ELEVATOR = true;
     public static boolean DEBUG_ARM = true;
     public static boolean DEBUG_WRIST = true;
+    public static boolean DEBUG_INTAKE = true;
+    public static boolean DEBUG_SIMULATION = true;
     public static boolean ANIMATE_ROBOT = true;
   }
 }

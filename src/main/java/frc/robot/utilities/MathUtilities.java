@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -68,6 +70,26 @@ public class MathUtilities {
         public static Rotation2d rotationToTarget(Translation2d source, Translation2d target) {
             double targetRadians = Math.atan2(target.getY() - source.getY(), target.getX() - source.getX());
             return new Rotation2d(targetRadians);
+        }
+
+        public static double[] convertPose3dToNumbers(Pose3d pose) {
+            return new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getZ(),
+                pose.getRotation().getQuaternion().getW(),
+                pose.getRotation().getQuaternion().getX(),
+                pose.getRotation().getQuaternion().getY(),
+                pose.getRotation().getQuaternion().getZ()
+            };
+        }
+
+        public static double[] convertPose2dToNumbers(Pose2d pose) {
+            return new double[] {
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees()
+            };
         }
     }
 

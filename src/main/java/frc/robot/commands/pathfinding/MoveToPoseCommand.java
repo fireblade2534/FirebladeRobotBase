@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +73,7 @@ public class MoveToPoseCommand extends Command {
 
         double heading = this.headingController.calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
 
-        RobotContainer.swerveSubsystem.swerveDrive.drive(new Translation2d(translationX / 2, translationY / 2), heading, true, true);
+        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(translationX, translationY, heading));
     }
 
     @Override
@@ -82,5 +83,6 @@ public class MoveToPoseCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(0, 0, 0));
     }
 }

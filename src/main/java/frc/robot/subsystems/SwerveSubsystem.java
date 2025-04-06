@@ -39,7 +39,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private void createSwerveObjects() {
 
-        Pose2d startingPose = new Pose2d(new Translation2d(Meter.of(1), Meter.of(4)), Rotation2d.fromDegrees(0)); // MAKE IT START ON OTHER SIDE WHEN RED OR WHAT EVER
+        Pose2d startingPose = new Pose2d(new Translation2d(Meter.of(2), Meter.of(6)), Rotation2d.fromDegrees(0)); // MAKE IT START ON OTHER SIDE WHEN RED OR WHAT EVER
 
         try {
             System.out.println("Initalizing swerveDrive");

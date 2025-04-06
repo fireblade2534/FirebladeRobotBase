@@ -50,7 +50,7 @@ public class Reef {
             Pose2d tagPose = Constants.APRIL_TAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d();
 
             double tagDistance = tagPose.getTranslation().getDistance(pose.getTranslation());
-            if (tagDistance < Constants.ReefConstants.CLOSE_DISTANCE && tagDistance < lowestTagDistance) {
+            if (tagDistance < Units.feetToMeters(Constants.ReefConstants.CLOSE_DISTANCE) && tagDistance < lowestTagDistance) {
                 lowestTagDistance = tagDistance;
                 lowestTagID = tagID;
             }
