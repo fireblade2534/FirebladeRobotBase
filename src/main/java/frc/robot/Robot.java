@@ -8,19 +8,45 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.lang.reflect.Field;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer robotContainer;
 
+  /*
+   * Alerts
+   */
+  private final Alert lowBatteryVoltageAlert =
+      new Alert(
+          "Low battery voltage",
+          AlertType.kWarning);
+
   public Robot() {
     Logger.recordMetadata("ProjectName", "FirebladeRobotBase");
     Logger.addDataReceiver(new NT4Publisher());
 
     Logger.start();
+
+    // Adjust loop overrun warning timeout
+    try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(0.2);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
+    }
+    CommandScheduler.getInstance().setPeriod(0.2);
     
     robotContainer = new RobotContainer();
   }
@@ -28,6 +54,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    if (RobotController.getBatteryVoltage() <= Constants.DriverConstants.Alerts.LOW_BATTERY_VOLTAGE) {
+      lowBatteryVoltageAlert.set(true);
+    }
   }
 
   @Override

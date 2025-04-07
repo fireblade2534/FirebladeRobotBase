@@ -9,6 +9,7 @@ import java.util.Set;
 import org.ironmaple.simulation.SimulatedArena;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.util.Units;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ControlElevatorBothStages;
@@ -40,11 +42,11 @@ public class RobotContainer {
   // Initalize public subsystems
   public static final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public static final VisionSubsystem visionSubsystem = new VisionSubsystem();
-  public static final PathfindingSubsystem pathfindingSubsystem = new PathfindingSubsystem();
   public static final SmartDashboardSubsystem smartDashboardSubsystem = new SmartDashboardSubsystem();
   public static final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  public static final PathfindingSubsystem pathfindingSubsystem = new PathfindingSubsystem();
   public static SimulationSubsystem simulationSubsystem;
 
   // Initalize driver controller and stream
@@ -141,12 +143,40 @@ public class RobotContainer {
     driverController.button(10).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
     driverController.button(9).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
     
+    /*
+     * Zero gyro
+     */
+    driverController.button(8).onTrue(new InstantCommand(() -> RobotContainer.swerveSubsystem.zeroGyro(), RobotContainer.swerveSubsystem));
 
     /*
      * Default commands
      */
     swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     elevatorSubsystem.setDefaultCommand(new ControlElevatorBothStages(() -> -driverController.getRightY()));
+  }
+
+  public static void configureNamedCommands() {
+    System.out.println("Configuring named commands");
+
+    /*
+     * Auto score on branch commands
+     */
+    NamedCommands.registerCommand("Score L1 Left", new AutoScoreCoralCommand(false, 0));
+    NamedCommands.registerCommand("Score L2 Left", new AutoScoreCoralCommand(false, 1));
+    NamedCommands.registerCommand("Score L3 Left", new AutoScoreCoralCommand(false, 2));
+    NamedCommands.registerCommand("Score L4 Left", new AutoScoreCoralCommand(false, 3));
+
+    NamedCommands.registerCommand("Score L1 Right", new AutoScoreCoralCommand(true, 0));
+    NamedCommands.registerCommand("Score L2 Right", new AutoScoreCoralCommand(true, 1));
+    NamedCommands.registerCommand("Score L3 Right", new AutoScoreCoralCommand(true, 2));
+    NamedCommands.registerCommand("Score L4 Right", new AutoScoreCoralCommand(true, 3));
+
+    /*
+     * Wrist control Commands
+     */
+    NamedCommands.registerCommand("Wrist Vertical", armSubsystem.setWristAngleCommand(90));
+    NamedCommands.registerCommand("Wrist Horizontal", armSubsystem.setWristAngleCommand(0));
+
   }
 
   public Command getAutonomousCommand() {

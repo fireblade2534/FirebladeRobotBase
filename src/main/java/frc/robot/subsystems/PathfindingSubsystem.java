@@ -42,6 +42,8 @@ public class PathfindingSubsystem extends SubsystemBase {
         System.out.println("Saving synced pathplanner config");
         FileUtilities.writeFile("pathplanner/settings.json", pathPlannerModified);
 
+        RobotContainer.configureNamedCommands();
+
         try {
             pathPlannerConfig = RobotConfig.fromGUISettings();
         } catch (Exception e) {

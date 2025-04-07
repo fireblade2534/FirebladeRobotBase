@@ -165,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void resetShoulderSetpoint() {
         double shoulderAngle = getShoulderAngle();
         shoulderController.reset(shoulderAngle);
-        setShoulderSetpoint(shoulderAngle);
+        setShoulderSetpoint(getShoulderAngle());
     }
 
     public double getWristAngle() {
@@ -193,6 +193,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public Command setShoulderAngleCommand(double angle) {
         return runOnce(() -> setShoulderSetpoint(angle));
+    }
+
+	public Command setWristAngleCommand(double angle) {
+        return runOnce(() -> setWristSetpoint(angle));
     }
 
     public Command setWristSpeedCommand(double wristSpeed) {

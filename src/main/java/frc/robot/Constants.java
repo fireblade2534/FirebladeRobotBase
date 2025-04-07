@@ -42,6 +42,14 @@ public final class Constants {
     }
   }
 
+  public static final boolean USE_WELDED_FIELD = false;
+  public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
+
+  public static class Starting {
+    public static final double X = 24.95316667; // Feet
+    public static final double Y = Units.metersToFeet(APRIL_TAG_FIELD_LAYOUT.getFieldWidth() / 2); // Feet
+  }
+
   public static class SwerveConstants {
 
     public static class SwerveModuleConstants {
@@ -210,13 +218,13 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.04;
+      public static final double D = 0.05;
     }
 
     public static class HeadingPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.04;
+      public static final double D = 0.05;
     }
 
     public static class WheelConstants {
@@ -259,17 +267,18 @@ public final class Constants {
     public static final int PORT = 0;
     public static final double DEADBAND = 0.1;
     public static final double TRANSLATION_SCALE = 1;
-    public static final double ROTATION_SCALE = 0.9;
+    public static final double ROTATION_SCALE = 0.7;
     public static final int CONTROL_EXPONENT = 2;
     public static final double CONTROL_ELEVATOR_SPEED = 1; // Feet/Second
     public static final double CONTROL_SHOULDER_SPEED = 50; // Degrees/Second
     public static final double CONTROL_WRIST_SPEED = 60; // Degrees/Second
     public static final double INTAKE_SPEED = -0.9; // Percent
     public static final double OUTTAKE_SPEED = 0.9; // Percent
-  }
 
-  public static final boolean USE_WELDED_FIELD = false;
-  public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(USE_WELDED_FIELD ? AprilTagFields.k2025ReefscapeWelded : AprilTagFields.k2025ReefscapeAndyMark);
+    public static class Alerts {
+      public static final double LOW_BATTERY_VOLTAGE = 11.5; // Volts
+    }
+  }
 
   public static class VisionConstants {
     public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 0.6); // The standard deviations of our vision estimated poses, which affect correction rate
@@ -397,7 +406,7 @@ public final class Constants {
       public static double I = 0;
       public static double D = 0.05;
       public static double S = 0.05; // Volts
-      public static double G = 3.51; // Volts
+      public static double G = 3.45; // Volts
       public static double V = 0.01; // Volts/(Degrees/Second)
       public static double A = 0.02; // Volts/(Degrees/Second^2) 
       public static double MASS = 10; // Pounds
@@ -433,7 +442,8 @@ public final class Constants {
 
       public static class Simulation {
         public static double WIDTH = 0.7; // Feet
-        public static double LENGTH = 0.5; // Feet
+        public static double LENGTH = 0.6; // Feet
+        public static boolean ASSUME_START_WITH = true;
       }
     }
 

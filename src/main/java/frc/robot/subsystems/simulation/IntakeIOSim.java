@@ -8,6 +8,7 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
 import static edu.wpi.first.units.Units.Meters;
 
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class IntakeIOSim extends IntakeSimulation {
@@ -16,6 +17,10 @@ public class IntakeIOSim extends IntakeSimulation {
         super("Coral", RobotContainer.swerveSubsystem.swerveDrive.getMapleSimDrive().get(),
             constructIntakeRectangle(RobotContainer.swerveSubsystem.swerveDrive.getMapleSimDrive().get(), width, height),
                 1);
+        
+        if (Constants.ArmConstants.Intake.Simulation.ASSUME_START_WITH) {
+            super.addGamePieceToIntake();
+        }
     }
 
     /**

@@ -7,6 +7,7 @@ import org.photonvision.EstimatedRobotPose;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -36,7 +37,7 @@ public class SmartDashboardSubsystem extends SubsystemBase {
             if (RobotContainer.simulationSubsystem.intakeSim.containsCoral()) {
                 SmartDashboard.putNumberArray("Simulation/Animate/Coral", MathUtilities.PoseUtilities.convertPose3dToNumbers(RobotContainer.simulationSubsystem.getEndCoralPose()));
             } else {
-                SmartDashboard.putNumberArray("Simulation/Animate/Coral", MathUtilities.PoseUtilities.convertPose3dToNumbers(new Pose3d()));
+                SmartDashboard.putNumberArray("Simulation/Animate/Coral", MathUtilities.PoseUtilities.convertPose3dToNumbers(new Pose3d(new Translation3d(0,0,-5), new Rotation3d())));
             }
             
         }

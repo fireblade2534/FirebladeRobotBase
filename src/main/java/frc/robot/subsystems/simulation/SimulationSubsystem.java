@@ -77,6 +77,11 @@ public class SimulationSubsystem extends SubsystemBase {
         return new Pose3d();
     }
 
+    public Translation3d getCoralShootDirection(Pose3d coralPose, double speed) {
+        Translation3d shootTranslation = new Translation3d(0,-speed, 0).rotateBy(coralPose.getRotation());
+        return shootTranslation;
+    }
+
     private void simulateEjectCoral() {
         if (RobotContainer.intakeSubsystem.getIntakeSpeedPercent() > 0.2) {
             if (intakeSim.ejectCoral()) {
@@ -84,28 +89,9 @@ public class SimulationSubsystem extends SubsystemBase {
                 Pose3d coralPose = getEndCoralPose();
                 SimulatedArena.getInstance()
                         .addGamePieceProjectile(new CoralFlightSim(ReefscapeCoralOnField.REEFSCAPE_CORAL_INFO,
-                        coralPose.getTranslation(), new Translation3d(0, 0, 0),
+                        coralPose.getTranslation(), getCoralShootDirection(coralPose, 0.2),
                         coralPose.getRotation()));
 
-                /*
-                AbstractDriveTrainSimulation driveSimulation = RobotContainer.swerveSubsystem.swerveDrive.getMapleSimDrive().get();
-                SimulatedArena.getInstance()
-                .addGamePieceProjectile(new ReefscapeCoralOnFly(
-                    // Obtain robot position from drive simulation
-                    driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
-                    // The scoring mechanism is installed at (0.46, 0) (meters) on the robot
-                    new Translation2d(0.6, 0),
-                    // Obtain robot speed from drive simulation
-                    driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-                    // Obtain robot facing from drive simulation
-                    driveSimulation.getSimulatedDriveTrainPose().getRotation(),
-                    // The height at which the coral is ejected
-                    coralPose.getTranslation().getMeasureZ(),
-                    // The initial speed of the coral
-                    MetersPerSecond.of(0),
-                    // The coral is ejected vertically downwards
-                    Degrees.of(0)));
-                */
             }
 
         }
@@ -114,7 +100,7 @@ public class SimulationSubsystem extends SubsystemBase {
     private void simulatePickupZone() {
         // Get the center of the pose in feild relative space
         Pose3d pickupAreaPose = swervePose.plus(new Transform3d(intakeSim.getShape().getCenter().x,
-                intakeSim.getShape().getCenter().y, 0.05, new Rotation3d()));
+                intakeSim.getShape().getCenter().y, 0.1, new Rotation3d()));
 
         // Check if the end of the arm is close enough to pickup
         boolean inPickupZone = pickupAreaPose.getTranslation().getDistance(endEffectorPose.getTranslation()) < Math

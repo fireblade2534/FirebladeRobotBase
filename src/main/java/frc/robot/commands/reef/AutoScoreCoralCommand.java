@@ -39,7 +39,7 @@ public class AutoScoreCoralCommand extends Command {
 
         if (closestTagID != -1) {
             System.out.println("Scoring on level " + (branchIndex + 1));
-			RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.15).schedule();
+	        RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.05).schedule();
 
             Pose2d tagPose = Reef.getReefIDPose(closestTagID, true);
 

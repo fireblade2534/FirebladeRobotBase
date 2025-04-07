@@ -2,10 +2,13 @@
  - Clean up the whole code base
  - Allow scoring on L1   DONE
  - Allow scoring on L2   DONE
- - Add control over the intake and outtake
+ - Add control over the intake and outtake  DONE
  - Add timeouts to some commands
  - Fix the damn controls lol (they were made for a joystick and not a controller)   DONE
  - Randomize the postion alittle bit on L1 so that more coral can be dropped
  - Add auto hang
  - Redo the vision subsystem
- - Ensure coral is outaked when scoring
+ - Add the climber
+ - Ensure coral is outaked when scoring  DONE
+ - Add named commands 
+ - Ground pickup command
