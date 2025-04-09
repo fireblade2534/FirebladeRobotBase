@@ -19,7 +19,7 @@ public class AutoAlignWithReefCommandGroup extends SequentialCommandGroup {
     public AutoAlignWithReefCommandGroup(int reefIndex) {
         System.out.println("Generating auto align with reef index " + reefIndex);
         Pose2d reefPose = Reef.getReefIndexPose(reefIndex, true);
-        addCommands(new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset.times(1.2)), 0), new MoveToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0.05, 2));
+        addCommands(new PathfindToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset.times(1.2)), 0), new MoveToPoseCommand(reefPose.transformBy(Constants.ReefConstants.AlignConstants.alignOffset), 0.05, 2, true));
     }
 }
  

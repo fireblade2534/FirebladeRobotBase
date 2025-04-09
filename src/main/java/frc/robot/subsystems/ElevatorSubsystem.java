@@ -150,11 +150,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setStage1Setpoint(double height) {
+		if (Double.isNaN(height)) {
+            System.err.println("setStage1Setpoint was given a nan value");
+            return;
+        }
         stage1Controller.setGoal(
                 MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)));
     }
 
     public void setStage2Setpoint(double height) {
+        if (Double.isNaN(height)) {
+            System.err.println("setStage2Setpoint was given a nan value");
+            return;
+        }
         stage2Controller.setGoal(
                 MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT)));
     }
@@ -212,6 +220,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setOverallHeight(double targetHeight) {
+		if (Double.isNaN(targetHeight)) {
+            System.err.println("setOverallHeight was given a nan value");
+            return;
+        }
+
         targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
 
         targetHeight = MathUtil.clamp(targetHeight, 0,

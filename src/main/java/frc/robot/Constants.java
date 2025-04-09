@@ -179,32 +179,34 @@ public final class Constants {
       public static final int ID = 0;
       public static final Object CANBUS = null;
       public static final boolean INVERTED = false;
+      public static final double OFFSET = 0; // Degrees
+      public static final double ANGULAR_VELOCITY_COEFF = 0.1;
     }
 
     public static class MotorConstants {
       public static class Angle {
-        public static final double RAMP_RATE = 0.25;
+        public static final double RAMP_RATE = 0;
         public static final double GEAR_RATIO = 21.4285714286;
         public static final double FACTOR = 0;
         public static final int CURRENT_LIMIT = 20; // Amps
 
         public static class Pidf {
-          public static final double P = 0.015;
+          public static final double P = 0.055;
           public static final double I = 0;
-          public static final double D = 0.1;
+          public static final double D = 0.02;
           public static final double F = 0;
           public static final double IZ = 0;
         }
       }
 
       public static class Drive {
-        public static final double RAMP_RATE = 0.25;
+        public static final double RAMP_RATE = 0;
         public static final double GEAR_RATIO = 6.75;
         public static final double FACTOR = 0;
         public static final int CURRENT_LIMIT = 40; // Amps
 
         public static class Pidf {
-          public static final double P = 0.0021645;
+          public static final double P = 0.006;
           public static final double I = 0;
           public static final double D = 0;
           public static final double F = 0;
@@ -218,13 +220,13 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.05;
+      public static final double D = 0.04;
     }
 
     public static class HeadingPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.05;
+      public static final double D = 0.04;
     }
 
     public static class WheelConstants {
@@ -296,11 +298,11 @@ public final class Constants {
       public static final boolean ENABLED = true;
       public static final double FRONT_OFFSET = 0; // Feet
       public static final double LEFT_OFFSET = -1.31234; // Feet
-      public static final double HEIGHT_OFFSET = 2.95276; // Feet
+      public static final double HEIGHT_OFFSET = 2.95276 - 2; // Feet
       public static final double ROLL = 0; // Degrees
       public static final double PITCH = 0; // Degrees
-      public static final double YAW = 28; // Degrees
-      public static final double EFFECTIVE_RANGE = 6; // Meters
+      public static final double YAW = 2; // Degrees
+      public static final double EFFECTIVE_RANGE = 16.4042; // Feet
 
       public static class CameraProperties {
         public static final int WIDTH = 1280; // Pixels
@@ -412,9 +414,10 @@ public final class Constants {
       public static double MASS = 10; // Pounds
       public static double MIN_ANGLE = -80; // Degrees
       public static double MAX_ANGLE = 80; // Degrees
-      public static double STARTING_ANGLE = 0; // Degrees
       public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
       public static double GEAR_RATIO = 50;
+      public static double ABSOLUTE_ENCODER_GEAR_RATIO = 1.85714;
+      public static double ABSOLUTE_ENCODER_PUSH_BACK = 25; // Degrees
       public static double CENTER_OFFSET_FOWARD = 0.492126; // Feet
       public static double STAGE_OFFSET_UP = 0.958; // Feet
       public static double TOLLERANCE = 3; // Degrees
@@ -443,7 +446,6 @@ public final class Constants {
       public static class Simulation {
         public static double WIDTH = 0.7; // Feet
         public static double LENGTH = 0.6; // Feet
-        public static boolean ASSUME_START_WITH = true;
       }
     }
 
@@ -453,6 +455,25 @@ public final class Constants {
 
     public static double LENGTH = 2; // Feet
     
+  }
+
+  public static class SimulationConstants {
+    public static class SpawnCoral {
+      public static boolean ENABLED = true;
+      public static int SPAWN_COUNT = 14;
+      public static double SPAWN_X = 5; // Feet
+      public static double SPAWN_Y = 5; // Feet
+      public static double SPAWN_RADIUS = 3; // Feet
+    }
+    public static boolean ASSUME_START_WITH_CORAL = true;
+  }
+
+  public static class SetpointConstants {
+    public static class GroundIntake {
+      public static double ELEVATOR_GROUND_HEIGHT = 0; // Feet
+      public static double WRIST_ANGLE = 0; // Degrees
+      public static double SHOULDER_ANGLE = -45; // Degrees
+    }
   }
 
   public static class DebugConstants {

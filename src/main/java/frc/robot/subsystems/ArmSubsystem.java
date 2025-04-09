@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
@@ -41,18 +43,17 @@ import frc.robot.utilities.MathUtilities;
 
 public class ArmSubsystem extends SubsystemBase {
 
+	private final boolean isSimulation = Robot.isSimulation();
+
     private final SparkMax shoulderMotor1 = new SparkMax(Constants.ArmConstants.Shoulder.ID1, MotorType.kBrushless);
     // private final SparkMax shoulderMotor2 = new
     // SparkMax(Constants.ArmConstants.Shoulder.ID2, MotorType.kBrushless);
     private final DCMotor shoulderGearbox = DCMotor.getNEO(1);
-    private final RelativeEncoder shoulderMotor1Encoder = shoulderMotor1.getEncoder();
-    private final AbsoluteEncoder shoulderMotor1AbsoluteEncoder = shoulderMotor1.getAbsoluteEncoder(); // Figure out if
-                                                                                                       // an aboslute
-                                                                                                       // encoder makes
-                                                                                                       // sense and on
-                                                                                                       // the bot if it
-                                                                                                       // is before the
-                                                                                                       // gears or after
+	private final RelativeEncoder shoulderMotor1Encoder = shoulderMotor1.getEncoder();
+    private final AbsoluteEncoder shoulderMotor1AbsoluteEncoder = shoulderMotor1.getAbsoluteEncoder();
+	private final Supplier<Double> shoulderPositionSupplier = (isSimulation)? () -> shoulderMotor1Encoder.getPosition() : () -> shoulderMotor1AbsoluteEncoder.getPosition();
+	private final Supplier<Double> shoulderVelocitySupplier = (isSimulation)? () -> shoulderMotor1Encoder.getVelocity() : () -> shoulderMotor1AbsoluteEncoder.getVelocity();
+	private final double shoulderPushBackHorizontal = (isSimulation)? 0 : Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_PUSH_BACK + 90; 
     private final SparkMaxSim shoulderMotorSim = new SparkMaxSim(shoulderMotor1, shoulderGearbox);
     private final ProfiledPIDController shoulderController;
     private final ArmFeedforward shoulderFeedFoward;
@@ -77,13 +78,23 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderMotor1Config.idleMode(IdleMode.kBrake); // Brake so the stage doesn't fall
         shoulderMotor1Config.inverted(false);
         shoulderMotor1Config.absoluteEncoder.inverted(false);
-        shoulderMotor1Config.absoluteEncoder.zeroOffset(Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_OFFSET);
-        shoulderMotor1.configure(shoulderMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        shoulderMotor1Encoder.setPosition(MathUtilities.ArmUtilities
-                .convertArmAngleToMotorAngle(Units.degreesToRotations(Constants.ArmConstants.Shoulder.STARTING_ANGLE),
-                        Constants.ArmConstants.Shoulder.GEAR_RATIO)
-                .in(Rotations));
+        
+        
+        double realOffset = (MathUtilities.ArmUtilities.convertArmAngleToMotorAngle(Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_OFFSET / 360, Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_GEAR_RATIO).in(Degrees) + Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_PUSH_BACK) / 360;
 
+        if (realOffset < 0) {
+            realOffset = 1 + realOffset;
+        }
+
+		shoulderMotor1Config.encoder.positionConversionFactor(1 / Constants.ArmConstants.Shoulder.GEAR_RATIO);
+		shoulderMotor1Config.encoder.velocityConversionFactor(1 / Constants.ArmConstants.Shoulder.GEAR_RATIO);
+		shoulderMotor1Config.absoluteEncoder.positionConversionFactor(1 / Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_GEAR_RATIO);
+		shoulderMotor1Config.absoluteEncoder.velocityConversionFactor(1 / Constants.ArmConstants.Shoulder.ABSOLUTE_ENCODER_GEAR_RATIO);
+		shoulderMotor1Config.absoluteEncoder.zeroOffset(realOffset);
+
+		shoulderMotor1.configure(shoulderMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+			
         // SparkMaxConfig shoulderMotor2Config = new SparkMaxConfig();
         // shoulderMotor2Config.idleMode(IdleMode.kBrake); // Brake so the stage doesn't
         // fall
@@ -95,6 +106,9 @@ public class ArmSubsystem extends SubsystemBase {
         SparkMaxConfig wristMotorConfig = new SparkMaxConfig();
         wristMotorConfig.idleMode(IdleMode.kCoast);
         wristMotorConfig.inverted(false);
+		wristMotorConfig.encoder.positionConversionFactor(1 / Constants.ArmConstants.Wrist.GEAR_RATIO);
+		wristMotorConfig.encoder.velocityConversionFactor(1 / Constants.ArmConstants.Wrist.GEAR_RATIO);
+
         wristMotor.configure(wristMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         /*
@@ -135,8 +149,7 @@ public class ArmSubsystem extends SubsystemBase {
                                     Constants.ArmConstants.Shoulder.MASS + Constants.ArmConstants.Wrist.MASS)),
                     Units.feetToMeters(Constants.ArmConstants.LENGTH),
                     Units.degreesToRadians(Constants.ArmConstants.Shoulder.MIN_ANGLE),
-                    Units.degreesToRadians(Constants.ArmConstants.Shoulder.MAX_ANGLE), true,
-                    Units.degreesToRadians(Constants.ArmConstants.Shoulder.STARTING_ANGLE), 0.02, 0);
+                    Units.degreesToRadians(Constants.ArmConstants.Shoulder.MAX_ANGLE), true, 0, 0.02, 0);
 
             wristDcMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(wristGearbox,
                     Constants.ArmConstants.Wrist.MOI, Constants.ArmConstants.Wrist.GEAR_RATIO), wristGearbox, 0.02, 0);
@@ -144,8 +157,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getShoulderAngle() {
-        return Units.rotationsToDegrees(MathUtilities.ArmUtilities.convertMotorAngleToArmAngle(
-                shoulderMotor1Encoder.getPosition(), Constants.ArmConstants.Shoulder.GEAR_RATIO).in(Rotations));
+        return Units.rotationsToDegrees(shoulderPositionSupplier.get()) - shoulderPushBackHorizontal;
     }
 
     public double getShoulderSetpoint() {
@@ -153,13 +165,17 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setShoulderSetpoint(double degrees) {
+        if (Double.isNaN(degrees)) {
+            System.err.println("setShoulderSetpoint was given a nan value");
+            return;
+        }
+
         shoulderController.setGoal(MathUtil.clamp(degrees, Constants.ArmConstants.Shoulder.MIN_ANGLE,
                 Constants.ArmConstants.Shoulder.MAX_ANGLE));
     }
 
     public double getShoulderVelocity() {
-        return Units.rotationsToDegrees(MathUtilities.ArmUtilities.convertMotorAngleToArmAngle(
-                shoulderMotor1Encoder.getVelocity() / 60, Constants.ArmConstants.Shoulder.GEAR_RATIO).in(Rotations));
+        return Units.rotationsToDegrees(shoulderVelocitySupplier.get() / 60);
     }
 
     public void resetShoulderSetpoint() {
@@ -169,9 +185,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getWristAngle() {
-        return Units.rotationsToDegrees(MathUtilities.ArmUtilities
-                .convertMotorAngleToArmAngle(wristMotorEncoder.getPosition(), Constants.ArmConstants.Wrist.GEAR_RATIO)
-                .in(Rotations));
+        return Units.rotationsToDegrees(wristMotorEncoder.getPosition());
     }
 
     public double getWristSetpoint() {
@@ -179,12 +193,15 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setWristSetpoint(double degrees) {
+        if (Double.isNaN(degrees)) {
+            System.err.println("setWristSetpoint was given a nan value");
+            return;
+        }
         wristController.setGoal(degrees);
     }
 
     public double getWristVelocity() {
-        return Units.rotationsToDegrees(MathUtilities.ArmUtilities.convertMotorAngleToArmAngle(
-                wristMotorEncoder.getVelocity() / 60, Constants.ArmConstants.Wrist.GEAR_RATIO).in(Rotations));
+        return Units.rotationsToDegrees(wristMotorEncoder.getVelocity() / 60);
     }
 
     public void resetWristSetpoint() {
@@ -215,11 +232,7 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderArmSim.update(0.02);
 
         // Iterate in the shoulder motor simulation
-        shoulderMotorSim.iterate(
-                RotationsPerSecond.of(MathUtilities.ArmUtilities
-                        .convertArmAngleToMotorAngle(Units.radiansToRotations(shoulderArmSim.getVelocityRadPerSec()),
-                                Constants.ArmConstants.Shoulder.GEAR_RATIO)
-                        .in(Rotations)).in(RPM),
+        shoulderMotorSim.iterate(Units.radiansToRotations(shoulderArmSim.getVelocityRadPerSec()) * 60,
                 RoboRioSim.getVInVoltage(), 0.02);
 
         // Simulate wrist
@@ -228,8 +241,7 @@ public class ArmSubsystem extends SubsystemBase {
         wristDcMotorSim.update(0.02);
 
         // Iterate on the wrist motor simulation
-        wristMotorSim.iterate(MathUtilities.ArmUtilities
-        .convertArmAngleToMotorAngle(wristDcMotorSim.getAngularVelocityRPM(), Constants.ArmConstants.Wrist.GEAR_RATIO).in(Rotations), RoboRioSim.getVInVoltage(), 0.02);
+        wristMotorSim.iterate(wristDcMotorSim.getAngularVelocityRPM(), RoboRioSim.getVInVoltage(), 0.02);
 
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(
                 shoulderArmSim.getCurrentDrawAmps() + wristDcMotorSim.getCurrentDrawAmps()));

@@ -11,4 +11,6 @@
  - Add the climber
  - Ensure coral is outaked when scoring  DONE
  - Add named commands 
- - Ground pickup command
+ - Ground pickup command DONE (sort of)
+ - Maby redo this to make it simpiler and more cohesive
+ - Improve speed of the auto score

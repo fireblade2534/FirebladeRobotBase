@@ -24,13 +24,15 @@ public class MoveToPoseCommand extends Command {
     private final ProfiledPIDController translationYController;
     private final PIDController headingController;
 
+    private final boolean endAtPose;
+
     /**
      * 
      * @param goalPose
      * @param translationErrorTolerance The tollerance in meters
      * @param rotationErrorTolerance The tollerance in degrees
      */
-    public MoveToPoseCommand(Pose2d goalPose, double translationErrorTolerance, double rotationErrorTolerance) {
+    public MoveToPoseCommand(Pose2d goalPose, double translationErrorTolerance, double rotationErrorTolerance, boolean endAtPose) {
         this.goalPose = goalPose;
         this.translationErrorTolerance = translationErrorTolerance;
         this.rotationErrorTolerance = Units.degreesToRadians(rotationErrorTolerance);
@@ -41,6 +43,8 @@ public class MoveToPoseCommand extends Command {
         this.translationYController = new ProfiledPIDController(Constants.SwerveConstants.TranslationPID.P, Constants.SwerveConstants.TranslationPID.I, Constants.SwerveConstants.TranslationPID.D, translatioConstraints);
         this.headingController = new PIDController(Constants.SwerveConstants.HeadingPID.P, Constants.SwerveConstants.HeadingPID.I, Constants.SwerveConstants.HeadingPID.D);
         
+        this.endAtPose = endAtPose;
+
         addRequirements(RobotContainer.swerveSubsystem);
     }
 
@@ -73,11 +77,15 @@ public class MoveToPoseCommand extends Command {
 
         double heading = this.headingController.calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
 
-        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(translationX, translationY, heading));
+        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(translationX / 2, translationY / 2, heading / 2));
     }
 
     @Override
     public boolean isFinished() {
+        if (!endAtPose) {
+            return false;
+        }
+
         return this.translationXController.atGoal() && this.translationYController.atGoal() && this.headingController.atSetpoint() && Math.abs(RobotContainer.swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond) < Units.degreesToRadians(Constants.SwerveConstants.ROTATION_ZERO_THRESHOLD) && MathUtilities.SpeedUtilities.convertChassisSpeed(RobotContainer.swerveSubsystem.getRobotVelocity()) < Units.feetToMeters(Constants.SwerveConstants.TRANSLATION_ZERO_THRESHOLD);
     }
 

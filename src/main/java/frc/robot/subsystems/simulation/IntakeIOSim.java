@@ -18,7 +18,7 @@ public class IntakeIOSim extends IntakeSimulation {
             constructIntakeRectangle(RobotContainer.swerveSubsystem.swerveDrive.getMapleSimDrive().get(), width, height),
                 1);
         
-        if (Constants.ArmConstants.Intake.Simulation.ASSUME_START_WITH) {
+        if (Constants.SimulationConstants.ASSUME_START_WITH_CORAL) {
             super.addGamePieceToIntake();
         }
     }

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ControlElevatorBothStages;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
+import frc.robot.commands.GroundPickupConfigurationCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.commands.reef.AutoScoreCoralCommand;
@@ -149,6 +150,11 @@ public class RobotContainer {
     driverController.button(8).onTrue(new InstantCommand(() -> RobotContainer.swerveSubsystem.zeroGyro(), RobotContainer.swerveSubsystem));
 
     /*
+     * Ground pickup setpoints
+     */
+    driverController.button(7).onTrue(new GroundPickupConfigurationCommand());
+
+    /*
      * Default commands
      */
     swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
@@ -172,11 +178,24 @@ public class RobotContainer {
     NamedCommands.registerCommand("Score L4 Right", new AutoScoreCoralCommand(true, 3));
 
     /*
-     * Wrist control Commands
+     * Wrist control commands
      */
     NamedCommands.registerCommand("Wrist Vertical", armSubsystem.setWristAngleCommand(90));
     NamedCommands.registerCommand("Wrist Horizontal", armSubsystem.setWristAngleCommand(0));
 
+    /*
+     * Ground intake commands
+     */
+    NamedCommands.registerCommand("Ground Intake Configuration", new GroundPickupConfigurationCommand());
+
+    /*
+     * Intake and outtake
+     */
+    NamedCommands.registerCommand("Intake",  intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
+    NamedCommands.registerCommand("Intake Until",  intakeSubsystem.intakeUntil(Constants.DriverConstants.INTAKE_SPEED, true, 5));
+
+    NamedCommands.registerCommand("Outtake",  intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
+    NamedCommands.registerCommand("Outtake Until",  intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 5));
   }
 
   public Command getAutonomousCommand() {

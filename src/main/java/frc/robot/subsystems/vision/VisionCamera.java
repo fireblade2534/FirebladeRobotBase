@@ -7,7 +7,9 @@ import java.util.function.Supplier;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.ConstrainedSolvepnpParams;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.jni.ConstrainedSolvepnpJni;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -24,6 +26,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -35,6 +38,7 @@ public class VisionCamera {
     private Transform3d cameraOffset;
     private PhotonPoseEstimator photonPoseEstimator;
     private Matrix<N3, N1> currentStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    private Optional<ConstrainedSolvepnpParams> solveParams = Optional.of(new ConstrainedSolvepnpParams(true,0.5));
     // Camera properties
     private double effectiveRange;
 
@@ -54,7 +58,7 @@ public class VisionCamera {
 
         photonPoseEstimator = new PhotonPoseEstimator(Constants.APRIL_TAG_FIELD_LAYOUT,
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
-        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+         photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
 
         if (Robot.isSimulation()) {
             SimCameraProperties cameraProperties = new SimCameraProperties();
@@ -67,6 +71,7 @@ public class VisionCamera {
             this.cameraSim = new PhotonCameraSim(this.camera, cameraProperties);
 
             this.cameraSim.setMaxSightRange(effectiveRange);
+            this.cameraSim.setMinTargetAreaPixels(35);
             // this.cameraSim.enableDrawWireframe(true);
             visionSim.addCamera(this.cameraSim, this.cameraOffset);
         }
@@ -76,7 +81,6 @@ public class VisionCamera {
     public void updateVision() {
         Optional<EstimatedRobotPose> robotEstimate = Optional.empty();
 
-        photonPoseEstimator.setLastPose(RobotContainer.swerveSubsystem.getPose());
 
         List<PhotonPipelineResult> photonResults = camera.getAllUnreadResults();
 
@@ -87,8 +91,12 @@ public class VisionCamera {
         double latestTiemstamp = -1;
         EstimatedRobotPose latestPose = null;
 
+        photonPoseEstimator.addHeadingData(Timer.getFPGATimestamp(), RobotContainer.swerveSubsystem.swerveDrive.getGyroRotation3d());
+
         for (PhotonPipelineResult result : photonResults) {
-            robotEstimate = photonPoseEstimator.update(result);
+            
+
+            robotEstimate = photonPoseEstimator.update(result, Optional.empty(), Optional.empty(), solveParams);
 
             if (robotEstimate.isEmpty()) {
                 continue;

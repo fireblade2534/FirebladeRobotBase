@@ -7,6 +7,7 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -52,6 +53,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
         swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+        swerveDrive.setAngularVelocityCompensation(true, true, Constants.SwerveConstants.Imu.ANGULAR_VELOCITY_COEFF);
+        swerveDrive.setGyroOffset(new Rotation3d(0,0, Units.degreesToRadians(Constants.SwerveConstants.Imu.OFFSET)));
     }
 
     private void makeYagslSwerveConfig() {
