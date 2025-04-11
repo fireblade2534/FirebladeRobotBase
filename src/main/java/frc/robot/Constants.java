@@ -355,6 +355,7 @@ public final class Constants {
 
       public static final double LIFT_ANGLE = 30;
       public static final double CLOSE_DISTANCE = 13; // Feet
+      public static final double SCORING_OFFSET = 0.07; // Feet
   }
 
   public static class ElevatorConstants {
@@ -453,7 +454,7 @@ public final class Constants {
       public static final int ID = 0;
     }
 
-    public static final double LENGTH = 2; // Feet
+    public static final double LENGTH = 2.081208; // Feet
     
   }
 

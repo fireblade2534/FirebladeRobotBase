@@ -58,7 +58,7 @@ public class AutoScoreCoralCommand extends Command {
 				// Calculate the horizontal distance between the robot and the arm when at the
 				// angle needed to score
 				double horizontalRobotArmDistance = (Math.cos(Units.degreesToRadians(scoringAngle))
-						* Units.feetToMeters(Constants.ArmConstants.LENGTH))
+						* Units.feetToMeters(Constants.ArmConstants.LENGTH + Constants.ReefConstants.SCORING_OFFSET))
 						+ Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
 				// Calculate the verticle offset between the robot and the arm when at the
@@ -91,9 +91,9 @@ public class AutoScoreCoralCommand extends Command {
 						branchPivotOffset -= maxHeight;
 					}
 
-					// Calculates the horizontal distance bettween the shoulder pivot and the branch
+					// Calculates the horizontal distance between the shoulder pivot and the branch
 					horizontalRobotArmDistance = Math
-							.sqrt(Math.pow(Units.feetToMeters(Constants.ArmConstants.LENGTH), 2)
+							.sqrt(Math.pow(Units.feetToMeters(Constants.ArmConstants.LENGTH + Constants.ReefConstants.SCORING_OFFSET), 2)
 									- Math.pow(branchPivotOffset, 2))
 							+ Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
