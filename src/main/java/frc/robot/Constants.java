@@ -220,7 +220,7 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 8;
       public static final double I = 0;
-      public static final double D = 0.04;
+      public static final double D = 0.1;
     }
 
     public static class HeadingPID {
@@ -236,7 +236,8 @@ public final class Constants {
 
     public static final double TRANSLATION_ZERO_THRESHOLD = 0.05; // Feet/Second
     public static final double ROTATION_ZERO_THRESHOLD = 0.05; // Degrees/Second
-
+    public static final double TRANSLATION_ACCEPTABLE_ERROR = 0.1; // Feet
+    public static final double ROTATION_ACCEPTABLE_ERROR = 2; // Degrees
 
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
@@ -323,25 +324,25 @@ public final class Constants {
           public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
 
           public static class L1 {
-            public static double MAX_HEIGHT = 1.50919; // Feet
-            public static double SCORE_HEIGHT = 3.3; // Feet
-            public static double SCORE_ANGLE = -30; // Degrees
-            public static double SCORE_OFFSET = 0.2; // Feet
+            public static final double MAX_HEIGHT = 1.50919; // Feet
+            public static final double SCORE_HEIGHT = 3.3; // Feet
+            public static final double SCORE_ANGLE = -30; // Degrees
+            public static final double SCORE_OFFSET = 0.2; // Feet
           }
 
           public static class L2 {
-            public static double MAX_HEIGHT = 2.65748; // Feet
-            public static double BRANCH_ANGLE = 35; // Degrees
+            public static final double MAX_HEIGHT = 2.65748; // Feet
+            public static final double BRANCH_ANGLE = 35; // Degrees
           }
 
           public static class L3 {
-            public static double MAX_HEIGHT = 3.96982; // Feet
-            public static double BRANCH_ANGLE = 35; // Degrees
+            public static final double MAX_HEIGHT = 3.96982; // Feet
+            public static final double BRANCH_ANGLE = 35; // Degrees
           }
           
           public static class L4 {
-            public static double MAX_HEIGHT = 6.00394; // Feet
-            public static double BRANCH_ANGLE = 90; // Degrees
+            public static final double MAX_HEIGHT = 5.99; // Feet
+            public static final double BRANCH_ANGLE = 90; // Degrees
           }
 
           public static final double BRANCH_LEFT_OFFSET = 0.563040616798; // Feet
@@ -358,131 +359,134 @@ public final class Constants {
 
   public static class ElevatorConstants {
     public static class Stage1 {
-      public static int ID = 3;
-      public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 200; // Not sure the unit
-      public static double P = 67;
-      public static double I = 0;
-      public static double D = 1.1;
-      public static double S = 0.05; // Volts
-      public static double G = 1.35; // Volts
-      public static double V = 17; // Volts/(Meters/Second)
-      public static double A = 0.2; // Volts/(Meters/Second^2) 
-      public static double MASS = 50; // Pounds
-      public static double DRUM_RADIUS = 0.98110236; // Inches
-      public static double GEAR_RATIO = 18.5714;
-      public static double HARD_MAX_HEIGHT = 2.75; // Feet
-      public static double TOLLERANCE = 0.2; // Feet
+      public static final int ID = 3;
+      public static final double MAX_VELOCITY = 120; // Not sure the unit
+      public static final double MAX_ACCELERATION = 200; // Not sure the unit
+      public static final double P = 67;
+      public static final double I = 0;
+      public static final double D = 1.15;
+      public static final double S = 0.05; // Volts
+      public static final double G = 1.36; // Volts
+      public static final double V = 17; // Volts/(Meters/Second)
+      public static final double A = 0.2; // Volts/(Meters/Second^2) 
+      public static final double MASS = 50; // Pounds
+      public static final double DRUM_RADIUS = 0.98110236; // Inches
+      public static final double GEAR_RATIO = 18.5714;
+      public static final double HARD_MAX_HEIGHT = 2.05; // Feet
+      public static final double TOLLERANCE = 0.2; // Feet
     }
 
     public static class Stage2 {
-      public static int ID = 2;
-      public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 200; // Not sure the unit
-      public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
-      public static double P = 66;
-      public static double I = 0;
-      public static double D = 1.1;
-      public static double S = 0.05; // Volts
-      public static double G = 0.65; // Volts
-      public static double V = 14.52; // Volts/(Meters/Second)
-      public static double A = 0.04; // Volts/(Meters/Second^2) 
-      public static double MASS = 35; // Pounds
-      public static double DRUM_RADIUS = 0.98110236; // Inches
-      public static double GEAR_RATIO = 15.7143;
-      public static double HARD_MAX_HEIGHT = 1.8; // Feet
-      public static double TOLLERANCE = 0.2; // Feet
+      public static final int ID = 2;
+      public static final double MAX_VELOCITY = 120; // Not sure the unit
+      public static final double MAX_ACCELERATION = 200; // Not sure the unit
+      public static final double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
+      public static final double P = 66;
+      public static final double I = 0;
+      public static final double D = 1.15;
+      public static final double S = 0.05; // Volts
+      public static final double G = 0.65; // Volts
+      public static final double V = 14.52; // Volts/(Meters/Second)
+      public static final double A = 0.04; // Volts/(Meters/Second^2) 
+      public static final double MASS = 35; // Pounds
+      public static final double DRUM_RADIUS = 0.98110236; // Inches
+      public static final double GEAR_RATIO = 15.7143;
+      public static final double HARD_MAX_HEIGHT = 2.12; // Feet
+      public static final double TOLLERANCE = 0.2; // Feet
     }
 
     public static final double ZERO_HEIGHTS_ABOVE_BASE = 0.520; // Feet
-    public static final double[] HEIGHT_SETPOINTS = {0, 2.65748, 3.96982, 6.00394}; // Feet
   }
 
   public static class ArmConstants {
     public static class Shoulder {
-      public static int ID1 = 4;
-      //public static int ID2 = 8;
-      public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 200; // Not sure the unit
-      public static double P = 0.6;
-      public static double I = 0;
-      public static double D = 0.05;
-      public static double S = 0.05; // Volts
-      public static double G = 3.45; // Volts
-      public static double V = 0.01; // Volts/(Degrees/Second)
-      public static double A = 0.02; // Volts/(Degrees/Second^2) 
-      public static double MASS = 10; // Pounds
-      public static double MIN_ANGLE = -80; // Degrees
-      public static double MAX_ANGLE = 80; // Degrees
-      public static double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
-      public static double GEAR_RATIO = 50;
-      public static double ABSOLUTE_ENCODER_GEAR_RATIO = 1.85714;
-      public static double ABSOLUTE_ENCODER_PUSH_BACK = 25; // Degrees
-      public static double CENTER_OFFSET_FOWARD = 0.492126; // Feet
-      public static double STAGE_OFFSET_UP = 0.958; // Feet
-      public static double TOLLERANCE = 3; // Degrees
+      public static final int ID1 = 4;
+      //public static final int ID2 = 8;
+      public static final double MAX_VELOCITY = 120; // Not sure the unit
+      public static final double MAX_ACCELERATION = 200; // Not sure the unit
+      public static final double P = 0.6;
+      public static final double I = 0;
+      public static final double D = 0.08;
+      public static final double S = 0.05; // Volts
+      public static final double G = 3.45; // Volts
+      public static final double V = 0.01; // Volts/(Degrees/Second)
+      public static final double A = 0.02; // Volts/(Degrees/Second^2) 
+      public static final double MASS = 10; // Pounds
+      public static final double MIN_ANGLE = -80; // Degrees
+      public static final double MAX_ANGLE = 80; // Degrees
+      public static final double ABSOLUTE_ENCODER_OFFSET = 0; // Degrees
+      public static final double GEAR_RATIO = 50;
+      public static final double ABSOLUTE_ENCODER_GEAR_RATIO = 1.85714;
+      public static final double ABSOLUTE_ENCODER_PUSH_BACK = 25; // Degrees
+      public static final double CENTER_OFFSET_FOWARD = 0.492126; // Feet
+      public static final double STAGE_OFFSET_UP = 0.958; // Feet
+      public static final double TOLLERANCE = 3; // Degrees
     }
 
     public static class Wrist {
-      public static int ID = 5;
-      public static double MAX_VELOCITY = 120; // Not sure the unit
-      public static double MAX_ACCELERATION = 200; // Not sure the unit
-      public static double P = 0.5;
-      public static double I = 0;
-      public static double D = 0.05;
-      public static double S = 0.05; // Volts
-      public static double G = 3.48; // Volts
-      public static double V = 0.01; // Volts/(Degrees/Second)
-      public static double A = 0.02; // Volts/(Degrees/Second^2) 
-      public static double MASS = 15; // Pounds
-      public static double MOI = 0.05; // Moment of innertia jKgMetersSquared
-      public static double GEAR_RATIO = 400;
-      public static double TOLLERANCE = 2; // Degrees
+      public static final int ID = 5;
+      public static final double MAX_VELOCITY = 120; // Not sure the unit
+      public static final double MAX_ACCELERATION = 200; // Not sure the unit
+      public static final double P = 0.5;
+      public static final double I = 0;
+      public static final double D = 0.05;
+      public static final double S = 0.05; // Volts
+      public static final double G = 3.48; // Volts
+      public static final double V = 0.01; // Volts/(Degrees/Second)
+      public static final double A = 0.02; // Volts/(Degrees/Second^2) 
+      public static final double MASS = 15; // Pounds
+      public static final double MOI = 0.05; // Moment of innertia jKgMetersSquared
+      public static final double GEAR_RATIO = 400;
+      public static final double TOLLERANCE = 2; // Degrees
     }
 
     public static class Intake {
-      public static int ID = 6;
+      public static final int ID = 6;
 
       public static class Simulation {
-        public static double WIDTH = 0.7; // Feet
-        public static double LENGTH = 0.6; // Feet
+        public static final double WIDTH = 0.7; // Feet
+        public static final double LENGTH = 0.6; // Feet
       }
     }
 
     public static class IntakeSensor {
-      public static int ID = 0;
+      public static final int ID = 0;
     }
 
-    public static double LENGTH = 2; // Feet
+    public static final double LENGTH = 2; // Feet
     
+  }
+
+  public static class ClimbConstants {
+    public static final int ID = 7;
   }
 
   public static class SimulationConstants {
     public static class SpawnCoral {
-      public static boolean ENABLED = true;
-      public static int SPAWN_COUNT = 14;
-      public static double SPAWN_X = 5; // Feet
-      public static double SPAWN_Y = 5; // Feet
-      public static double SPAWN_RADIUS = 3; // Feet
+      public static final boolean ENABLED = true;
+      public static final int SPAWN_COUNT = 24;
+      public static final double SPAWN_X = 5; // Feet
+      public static final double SPAWN_Y = 5; // Feet
+      public static final double SPAWN_RADIUS = 3; // Feet
     }
-    public static boolean ASSUME_START_WITH_CORAL = true;
+    public static final boolean ASSUME_START_WITH_CORAL = true;
   }
 
   public static class SetpointConstants {
     public static class GroundIntake {
-      public static double ELEVATOR_GROUND_HEIGHT = 0; // Feet
-      public static double WRIST_ANGLE = 0; // Degrees
-      public static double SHOULDER_ANGLE = -45; // Degrees
+      public static final double ELEVATOR_GROUND_HEIGHT = 0; // Feet
+      public static final double WRIST_ANGLE = 0; // Degrees
+      public static final double SHOULDER_ANGLE = -45; // Degrees
     }
   }
 
   public static class DebugConstants {
-    public static boolean DEBUG_VISION = true;
-    public static boolean DEBUG_ELEVATOR = true;
-    public static boolean DEBUG_ARM = true;
-    public static boolean DEBUG_WRIST = true;
-    public static boolean DEBUG_INTAKE = true;
-    public static boolean DEBUG_SIMULATION = true;
-    public static boolean ANIMATE_ROBOT = true;
+    public static final boolean DEBUG_VISION = true;
+    public static final boolean DEBUG_ELEVATOR = true;
+    public static final boolean DEBUG_ARM = true;
+    public static final boolean DEBUG_WRIST = true;
+    public static final boolean DEBUG_INTAKE = true;
+    public static final boolean DEBUG_SIMULATION = true;
+    public static final boolean ANIMATE_ROBOT = true;
   }
 }

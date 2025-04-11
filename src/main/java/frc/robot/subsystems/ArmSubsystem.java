@@ -154,6 +154,8 @@ public class ArmSubsystem extends SubsystemBase {
             wristDcMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(wristGearbox,
                     Constants.ArmConstants.Wrist.MOI, Constants.ArmConstants.Wrist.GEAR_RATIO), wristGearbox, 0.02, 0);
         }
+
+        System.out.println("Created ArmSubsystem");
     }
 
     public double getShoulderAngle() {

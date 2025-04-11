@@ -1,9 +1,9 @@
- - Fix the arm system so its zero point is behind the physical rotation limits of the arm
+ - Fix the arm system so its zero point is behind the physical rotation limits of the arm  DONE
  - Clean up the whole code base
  - Allow scoring on L1   DONE
  - Allow scoring on L2   DONE
  - Add control over the intake and outtake  DONE
- - Add timeouts to some commands
+ - Add timeouts to some commands  DONE
  - Fix the damn controls lol (they were made for a joystick and not a controller)   DONE
  - Randomize the postion alittle bit on L1 so that more coral can be dropped
  - Add auto hang
@@ -14,3 +14,4 @@
  - Ground pickup command DONE (sort of)
  - Maby redo this to make it simpiler and more cohesive
  - Improve speed of the auto score
+ - Added cancel to the auto score one reef  DONE

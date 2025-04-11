@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,16 +22,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final DigitalInput intakeSensor = new DigitalInput(Constants.ArmConstants.IntakeSensor.ID);
     private final boolean isSimulation = Robot.isSimulation();
+    private boolean coralState = false;
 
     public IntakeSubsystem() {
+        System.out.println("Created IntakeSubsystem");
     }
 
     public boolean hasCoral() {
-        if (isSimulation) {
-            return RobotContainer.simulationSubsystem.intakeSim.containsCoral();
-        }
-        // The intake sensor is inverted so an ON signal means there is no game peice
-        return !intakeSensor.get();
+       return coralState;
     }
 
     public void setIntakeSpeed(double intakeSpeed) {
@@ -51,5 +50,24 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command intakeUntil(double intakeSpeed, boolean desiredState, double timeoutSeconds) {
         return setIntakeSpeedCommand(intakeSpeed).until(() -> hasCoral() == desiredState).withTimeout(timeoutSeconds);
+    }
+
+    @Override
+    public void periodic() {
+        boolean lastState = coralState;
+        if (isSimulation) {
+            coralState = RobotContainer.simulationSubsystem.intakeSim.containsCoral();
+        } else {
+            // The intake sensor is inverted so an ON signal means there is no game peice
+            coralState = !intakeSensor.get();
+        }
+        
+        if (coralState != lastState) {
+            if (coralState == true) {
+                RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kLeftRumble, 1, 0.1).schedule();
+            } else {
+                RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kRightRumble, 1, 0.1).schedule();
+            }
+        }
     }
 }

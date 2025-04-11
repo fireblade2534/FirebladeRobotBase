@@ -17,8 +17,6 @@ import frc.robot.utilities.MathUtilities;
 
 public class MoveToPoseCommand extends Command {
     private final Pose2d goalPose;
-    private final double translationErrorTolerance;
-    private final double rotationErrorTolerance;
 
     private final ProfiledPIDController translationXController;
     private final ProfiledPIDController translationYController;
@@ -28,14 +26,11 @@ public class MoveToPoseCommand extends Command {
 
     /**
      * 
-     * @param goalPose
-     * @param translationErrorTolerance The tollerance in meters
-     * @param rotationErrorTolerance The tollerance in degrees
+     * @param goalPose The pose to move to
+     * @param endAtPose If the command should end once the robot has reached the goal pose
      */
-    public MoveToPoseCommand(Pose2d goalPose, double translationErrorTolerance, double rotationErrorTolerance, boolean endAtPose) {
+    public MoveToPoseCommand(Pose2d goalPose, boolean endAtPose) {
         this.goalPose = goalPose;
-        this.translationErrorTolerance = translationErrorTolerance;
-        this.rotationErrorTolerance = Units.degreesToRadians(rotationErrorTolerance);
 
         TrapezoidProfile.Constraints translatioConstraints = new TrapezoidProfile.Constraints(Units.feetToMeters(Constants.RobotKinematicConstants.MAX_SPEED), Units.feetToMeters(Constants.RobotKinematicConstants.MAX_ACCELERATION));
 
@@ -60,9 +55,9 @@ public class MoveToPoseCommand extends Command {
         this.translationYController.setGoal(this.goalPose.getY());
         this.headingController.setSetpoint(this.goalPose.getRotation().getRadians());
 
-        this.translationXController.setTolerance(this.translationErrorTolerance);
-        this.translationYController.setTolerance(this.translationErrorTolerance);
-        this.headingController.setTolerance(this.rotationErrorTolerance);
+        this.translationXController.setTolerance(Units.feetToMeters(Constants.SwerveConstants.TRANSLATION_ACCEPTABLE_ERROR));
+        this.translationYController.setTolerance(Units.feetToMeters(Constants.SwerveConstants.TRANSLATION_ACCEPTABLE_ERROR));
+        this.headingController.setTolerance(Units.degreesToRadians(Constants.SwerveConstants.ROTATION_ACCEPTABLE_ERROR));
 
         this.headingController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -77,7 +72,7 @@ public class MoveToPoseCommand extends Command {
 
         double heading = this.headingController.calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
 
-        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(translationX / 2, translationY / 2, heading / 2));
+        RobotContainer.swerveSubsystem.swerveDrive.driveFieldOriented(new ChassisSpeeds(translationX / 1.5, translationY / 1.5, heading / 1.5));
     }
 
     @Override

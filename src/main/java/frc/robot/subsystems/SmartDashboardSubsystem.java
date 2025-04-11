@@ -20,6 +20,7 @@ import frc.robot.utilities.MathUtilities;
 public class SmartDashboardSubsystem extends SubsystemBase {
     public SmartDashboardSubsystem() {
         SmartDashboard.putData(CommandScheduler.getInstance());
+        System.out.println("Created SmartDashboardSubsystem");
     }
 
     @Override
@@ -120,8 +121,18 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 Pose3d shoulderPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(0, -Units.degreesToRadians(shoulderAngle),0));
                 SmartDashboard.putNumberArray("Arm/Shoulder/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(shoulderPose));
 
-                Pose3d wristPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
+                Pose3d wristPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0.0023, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
                 SmartDashboard.putNumberArray("Arm/Wrist/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(wristPose));
+
+                SmartDashboard.putNumberArray("Climb/Position", new double[] {
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                });
                 
             }
         }

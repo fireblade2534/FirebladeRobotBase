@@ -115,6 +115,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                     Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
         }
 
+        System.out.println("Created ElevatorSubsystem");
     }
 
     public SparkMax getStage1Motor() {

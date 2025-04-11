@@ -128,15 +128,15 @@ public class RobotContainer {
      * Auto score coral on the reef
      */
 
-    driverController.twoButtonTrigger(4, 5).onTrue(new AutoScoreCoralCommand(false, 0));
-    driverController.twoButtonTrigger(2, 5).onTrue(new AutoScoreCoralCommand(false, 1));
-    driverController.twoButtonTrigger(1, 5).onTrue(new AutoScoreCoralCommand(false, 2));
-    driverController.twoButtonTrigger(3, 5).onTrue(new AutoScoreCoralCommand(false, 3));
+    driverController.twoButtonTrigger(4, 5).onTrue(new AutoScoreCoralCommand(false, 0, true));
+    driverController.twoButtonTrigger(2, 5).onTrue(new AutoScoreCoralCommand(false, 1, true));
+    driverController.twoButtonTrigger(1, 5).onTrue(new AutoScoreCoralCommand(false, 2, true));
+    driverController.twoButtonTrigger(3, 5).onTrue(new AutoScoreCoralCommand(false, 3, true));
 
-    driverController.twoButtonTrigger(4, 6).onTrue(new AutoScoreCoralCommand(true, 0));
-    driverController.twoButtonTrigger(2, 6).onTrue(new AutoScoreCoralCommand(true, 1));
-    driverController.twoButtonTrigger(1, 6).onTrue(new AutoScoreCoralCommand(true, 2));
-    driverController.twoButtonTrigger(3, 6).onTrue(new AutoScoreCoralCommand(true, 3));
+    driverController.twoButtonTrigger(4, 6).onTrue(new AutoScoreCoralCommand(true, 0, true));
+    driverController.twoButtonTrigger(2, 6).onTrue(new AutoScoreCoralCommand(true, 1, true));
+    driverController.twoButtonTrigger(1, 6).onTrue(new AutoScoreCoralCommand(true, 2, true));
+    driverController.twoButtonTrigger(3, 6).onTrue(new AutoScoreCoralCommand(true, 3, true));
 
     /*
      * Intake coral
@@ -167,15 +167,15 @@ public class RobotContainer {
     /*
      * Auto score on branch commands
      */
-    NamedCommands.registerCommand("Score L1 Left", new AutoScoreCoralCommand(false, 0));
-    NamedCommands.registerCommand("Score L2 Left", new AutoScoreCoralCommand(false, 1));
-    NamedCommands.registerCommand("Score L3 Left", new AutoScoreCoralCommand(false, 2));
-    NamedCommands.registerCommand("Score L4 Left", new AutoScoreCoralCommand(false, 3));
+    NamedCommands.registerCommand("Score L1 Left", new AutoScoreCoralCommand(false, 0, false));
+    NamedCommands.registerCommand("Score L2 Left", new AutoScoreCoralCommand(false, 1, false));
+    NamedCommands.registerCommand("Score L3 Left", new AutoScoreCoralCommand(false, 2, false));
+    NamedCommands.registerCommand("Score L4 Left", new AutoScoreCoralCommand(false, 3, false));
 
-    NamedCommands.registerCommand("Score L1 Right", new AutoScoreCoralCommand(true, 0));
-    NamedCommands.registerCommand("Score L2 Right", new AutoScoreCoralCommand(true, 1));
-    NamedCommands.registerCommand("Score L3 Right", new AutoScoreCoralCommand(true, 2));
-    NamedCommands.registerCommand("Score L4 Right", new AutoScoreCoralCommand(true, 3));
+    NamedCommands.registerCommand("Score L1 Right", new AutoScoreCoralCommand(true, 0, false));
+    NamedCommands.registerCommand("Score L2 Right", new AutoScoreCoralCommand(true, 1, false));
+    NamedCommands.registerCommand("Score L3 Right", new AutoScoreCoralCommand(true, 2, false));
+    NamedCommands.registerCommand("Score L4 Right", new AutoScoreCoralCommand(true, 3, false));
 
     /*
      * Wrist control commands

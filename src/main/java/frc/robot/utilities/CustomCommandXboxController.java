@@ -86,6 +86,10 @@ public class CustomCommandXboxController extends CommandXboxController {
         });
     }
 
+    public boolean noDirectionsHeld() {
+        return (getLeftX() == 0 && getLeftY() == 0 && getRightX() == 0 && getRightY() == 0);
+    }
+
     public Command setRumbleCommand(RumbleType type, double strength) {
         return Commands.startEnd(() -> super.setRumble(type, strength), () -> super.setRumble(type, 0));
     }
