@@ -52,8 +52,8 @@ public class RobotContainer {
 
   // Initalize driver controller and stream
   public static final CustomCommandXboxController driverController = new CustomCommandXboxController(
-      Constants.DriverConstants.PORT, Constants.DriverConstants.DEADBAND, Constants.DriverConstants.CONTROL_EXPONENT,
-      Constants.DriverConstants.CONTROL_EXPONENT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
+      Constants.DriverConstants.PORT, Constants.DriverConstants.DEADBAND, Constants.DriverConstants.LEFT_JOYSTICK_EXPONENT,
+      Constants.DriverConstants.RIGHT_JOYSTICK_EXPONENT, Constants.DriverConstants.TRIGGER_EXPONENT); // new Controller(Constants.DriverConstants.PORT, Constants.DriverConstants.CONTROL_EXPONENT); 
 
   public static final SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.swerveDrive,
       () -> -driverController.getLeftY(),
@@ -141,8 +141,8 @@ public class RobotContainer {
     /*
      * Intake coral
      */
-    driverController.button(10).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
-    driverController.button(9).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
+    driverController.leftTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
+    driverController.rightTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
     
     /*
      * Zero gyro

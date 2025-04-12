@@ -271,7 +271,9 @@ public final class Constants {
     public static final double DEADBAND = 0.1;
     public static final double TRANSLATION_SCALE = 1;
     public static final double ROTATION_SCALE = 0.7;
-    public static final int CONTROL_EXPONENT = 2;
+    public static final double LEFT_JOYSTICK_EXPONENT = 1.5;
+    public static final double RIGHT_JOYSTICK_EXPONENT = 1.5;
+    public static final double TRIGGER_EXPONENT = 1;
     public static final double CONTROL_ELEVATOR_SPEED = 1; // Feet/Second
     public static final double CONTROL_SHOULDER_SPEED = 50; // Degrees/Second
     public static final double CONTROL_WRIST_SPEED = 60; // Degrees/Second

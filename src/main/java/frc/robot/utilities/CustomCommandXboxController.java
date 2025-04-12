@@ -16,14 +16,16 @@ public class CustomCommandXboxController extends CommandXboxController {
     private final double deadband;
     private final double leftExponent;
     private final double rightExponent;
+    private final double triggerExponent;
 
-    public CustomCommandXboxController(int port, double deadband, double leftExponent, double rightExponent) {
+    public CustomCommandXboxController(int port, double deadband, double leftExponent, double rightExponent, double triggerExponent) {
         super(port);
 
         this.port = port;
         this.deadband = deadband;
         this.leftExponent = leftExponent;
         this.rightExponent = rightExponent;
+        this.triggerExponent = triggerExponent;
     }
 
     @Override
@@ -44,6 +46,16 @@ public class CustomCommandXboxController extends CommandXboxController {
     @Override
     public double getRightY() {
         return applyExponent(applyJoystickDeadband(super.getRightY()), rightExponent);
+    }
+
+    @Override
+    public double getLeftTriggerAxis() {
+        return applyExponent(applyJoystickDeadband(super.getLeftTriggerAxis()), triggerExponent);
+    }
+
+    @Override
+    public double getRightTriggerAxis() {
+        return applyExponent(applyJoystickDeadband(super.getRightTriggerAxis()), triggerExponent);
     }
 
     public Trigger povUpDirection() {
@@ -107,7 +119,7 @@ public class CustomCommandXboxController extends CommandXboxController {
     }
 
     private double applyExponent(double value, double exponent) {
-        return Math.abs(Math.pow(value, exponent)) * Math.signum(value);
+        return Math.pow(Math.abs(value), exponent) * Math.signum(value);
     }
 
     private double applyJoystickDeadband(double value) {

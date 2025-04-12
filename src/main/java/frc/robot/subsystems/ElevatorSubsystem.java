@@ -196,24 +196,47 @@ public class ElevatorSubsystem extends SubsystemBase {
                 Constants.ElevatorConstants.Stage2.GEAR_RATIO).in(Meters);
     }
 
+    /**
+     * Sets the setpoint for stage 1 to the stages current height
+     */
     public void resetStage1Setpoint() {
         setStage1Setpoint(getStage1Height());
     }
 
+    /**
+     * Sets the setpoint for stage 2 to the stages current height
+     */
     public void resetStage2Setpoint() {
         setStage2Setpoint(getStage2Height());
     }
 
+    /**
+     * Gets the offset of the shoulder pivot point from the ground
+     * 
+     * @param includeGroundHeight If the distance from the bot to the ground should be included
+     * @return The pivot points offset from the ground / body pan in meters
+     */
     public double getPivotPointOffset(boolean includeGroundHeight) {
         return ((includeGroundHeight) ? Units.feetToMeters(Constants.RobotKinematicConstants.HEIGHT_OFF_GROUND) : 0)
                 + Units.feetToMeters(Constants.ElevatorConstants.ZERO_HEIGHTS_ABOVE_BASE)
                 + Units.feetToMeters(Constants.ArmConstants.Shoulder.STAGE_OFFSET_UP);
     }
 
+    /**
+     * Gets the height of both elevator stages relative to the carpet
+     * 
+     * @return The height of the elevator relative to the carpet in meters
+     */
     public double getCarpetElevatorHeight() {
         return (getStage1Height() + getStage2Height()) + getPivotPointOffset(true);
     }
 
+    /**
+     * Checks if a target height is reachable by the elevator
+     * 
+     * @param height The target height from the ground in meters
+     * @return Whether the target height is posible
+     */
     public boolean checkGlobalHeightPossible(double height) {
 
         // Because the elevator even at its lowest is a little bit off the ground its base height has to be subtracted from the overall height to get the local height
@@ -225,7 +248,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     /**
      * Sets the overall height of the elevator by moving both stages
      * 
-     * @param targetHeight The target height of the elevator relative to the ground
+     * @param targetHeight The target height of the elevator relative to the ground in meters
      */
     public void setOverallHeight(double targetHeight) {
 	if (Double.isNaN(targetHeight)) {

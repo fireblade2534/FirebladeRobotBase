@@ -85,6 +85,8 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 
                 SmartDashboard.putNumber("Elevator/Stage1/Height", stage1Height);
                 SmartDashboard.putNumber("Elevator/Stage2/Height", stage2Height);
+
+                SmartDashboard.putNumber("Elevator/OverallHeight", RobotContainer.elevatorSubsystem.getCarpetElevatorHeight());
             }
 
             if (Constants.DebugConstants.DEBUG_ARM) {
@@ -124,15 +126,8 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                 Pose3d wristPose = new Pose3d(Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD), 0.0023, stage1Height + stage2Height + RobotContainer.elevatorSubsystem.getPivotPointOffset(false), new Rotation3d(Units.degreesToRadians(wristAngle), -Units.degreesToRadians(shoulderAngle),0));
                 SmartDashboard.putNumberArray("Arm/Wrist/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(wristPose));
 
-                SmartDashboard.putNumberArray("Climb/Position", new double[] {
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                });
+                Pose3d climbPose = new Pose3d(-0.3628, 0, 0.205338, new Rotation3d(0,Units.degreesToRadians(-60),0));
+                SmartDashboard.putNumberArray("Climb/Position", MathUtilities.PoseUtilities.convertPose3dToNumbers(climbPose));
                 
             }
         }
