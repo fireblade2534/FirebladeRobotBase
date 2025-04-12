@@ -327,7 +327,7 @@ public final class Constants {
             public static final double MAX_HEIGHT = 1.50919; // Feet
             public static final double SCORE_HEIGHT = 3.3; // Feet
             public static final double SCORE_ANGLE = -30; // Degrees
-            public static final double SCORE_OFFSET = 0.2; // Feet
+            public static final double SCORE_OFFSET = 0.25; // Feet
           }
 
           public static class L2 {

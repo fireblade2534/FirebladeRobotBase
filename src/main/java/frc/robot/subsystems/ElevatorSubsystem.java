@@ -51,6 +51,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final ElevatorFeedforward stage2FeedFoward;
     private ElevatorSim stage2ElevatorSim = null;
 
+    private final double stage1MaxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT);
+    private final double stage2MaxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+    private final double maxHeight = stage1MaxHeight + stage2MaxHeight;
+
     public ElevatorSubsystem() {
 
         /*
@@ -107,12 +111,12 @@ public class ElevatorSubsystem extends SubsystemBase {
             stage1ElevatorSim = new ElevatorSim(stage1Gearbox, Constants.ElevatorConstants.Stage1.GEAR_RATIO,
                     Units.lbsToKilograms(Constants.ElevatorConstants.Stage1.MASS),
                     Units.inchesToMeters(Constants.ElevatorConstants.Stage1.DRUM_RADIUS), 0,
-                    Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
+                    this.stage1MaxHeight, true, 0, 0.02, 0);
 
             stage2ElevatorSim = new ElevatorSim(stage2Gearbox, Constants.ElevatorConstants.Stage2.GEAR_RATIO,
                     Units.lbsToKilograms(Constants.ElevatorConstants.Stage2.MASS),
                     Units.inchesToMeters(Constants.ElevatorConstants.Stage2.DRUM_RADIUS), 0,
-                    Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT), true, 0, 0.02, 0);
+                    this.stage2MaxHeight, true, 0, 0.02, 0);
         }
 
         System.out.println("Created ElevatorSubsystem");
@@ -151,12 +155,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setStage1Setpoint(double height) {
-		if (Double.isNaN(height)) {
+	if (Double.isNaN(height)) {
             System.err.println("setStage1Setpoint was given a nan value");
             return;
         }
         stage1Controller.setGoal(
-                MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)));
+                MathUtil.clamp(height, 0, this.stage1MaxHeight));
     }
 
     public void setStage2Setpoint(double height) {
@@ -165,7 +169,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             return;
         }
         stage2Controller.setGoal(
-                MathUtil.clamp(height, 0, Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT)));
+                MathUtil.clamp(height, 0, this.stage2MaxHeight));
     }
 
     public double getStage1Height() {
@@ -215,35 +219,37 @@ public class ElevatorSubsystem extends SubsystemBase {
         // Because the elevator even at its lowest is a little bit off the ground its base height has to be subtracted from the overall height to get the local height
         double elevatorLocalHeight = height - getPivotPointOffset(true);
 
-        double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
-                + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
-        return elevatorLocalHeight >= 0 && elevatorLocalHeight <= maxHeight;
+        return elevatorLocalHeight >= 0 && elevatorLocalHeight <= this.maxHeight;
     }
 
+    /**
+     * Sets the overall height of the elevator by moving both stages
+     * 
+     * @param targetHeight The target height of the elevator relative to the ground
+     */
     public void setOverallHeight(double targetHeight) {
-		if (Double.isNaN(targetHeight)) {
+	if (Double.isNaN(targetHeight)) {
             System.err.println("setOverallHeight was given a nan value");
             return;
         }
 
+        // Because the target height is based on the distance from the carpet it has to be converted to elevator height
         targetHeight = targetHeight - RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
 
-        targetHeight = MathUtil.clamp(targetHeight, 0,
-                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
-                        + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+        // Clamp the target height so it is within the possible range of the elevator
+        targetHeight = MathUtil.clamp(targetHeight, 0, this.maxHeight);
 
-        double totalHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
-                + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
-
-        double targetRatio = targetHeight / totalHeight;
+        // Get the percent of the total height the elevator is going to
+        double targetRatio = targetHeight / maxHeight;
 
         double target1Height = MathUtil.clamp(
-                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT) * targetRatio, 0,
-                Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT));
+                this.stage1MaxHeight * targetRatio, 0,
+                this.stage1MaxHeight);
         double target2Height = MathUtil.clamp(
-                Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT) * targetRatio, 0,
-                Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT));
+                this.stage2MaxHeight * targetRatio, 0,
+                this.stage2MaxHeight);
 
+        // Set each elevators setpoint to the calculated heights
         setStage1Setpoint(target1Height);
         setStage2Setpoint(target2Height);
     }

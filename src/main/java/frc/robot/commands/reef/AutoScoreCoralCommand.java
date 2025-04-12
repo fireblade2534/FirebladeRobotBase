@@ -69,11 +69,12 @@ public class AutoScoreCoralCommand extends Command {
 				double elevatorTargetHeight = Units.feetToMeters(Reef.heightsList[branchIndex])
 						- verticalRobotArmDistance;
 
+				// Calculates the minium distance that the robot can be from the reef specificly from the shouler pivots POV
 				double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
 						- Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
 				
-
+				// For some locations the size of the robots swerve base and the limits on the elevators height prevents it from doing the optimal placing angles
 				if (!RobotContainer.elevatorSubsystem.checkGlobalHeightPossible(elevatorTargetHeight)
 						|| minimumRobotDistance > horizontalRobotArmDistance) {
 

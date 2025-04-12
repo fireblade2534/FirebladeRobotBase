@@ -15,3 +15,7 @@
  - Maby redo this to make it simpiler and more cohesive
  - Improve speed of the auto score
  - Added cancel to the auto score one reef  DONE
+ - Add more comments especially in more complex bits
+ - Test the auto score
+ - Make the intake use the triggers maby
+ - Animate the climber and make it work good
