@@ -19,3 +19,5 @@
  - Test the auto score
  - Make the intake use the triggers maby
  - Animate the climber and make it work good
+ - Draft and standardize a set of rumbles representing different things
+ - Maby consolidate alot of the tag processing stuff into a new class

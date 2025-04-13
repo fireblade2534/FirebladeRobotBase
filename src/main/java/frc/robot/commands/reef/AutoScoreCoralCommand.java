@@ -50,66 +50,89 @@ public class AutoScoreCoralCommand extends Command {
 			System.out.println("Scoring on level " + (branchIndex + 1));
 			RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.05).schedule();
 
-			Pose2d tagPose = Reef.getReefIDPose(closestTagID, true);
+			Pose2d tagPose = Reef.getReefTagPose(closestTagID, true);
 
-			Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, right);
+			if (branchIndex != 0) {
+				
 
-			// Get the angle of the branch and its perpendicular angle
-			double branchAngle = Reef.getBranchAngle(branchIndex);
+				Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, right);
 
-			double scoringAngle = -MathUtilities.AngleUtilities.getPerpendicularAngle(branchAngle).in(Radians);
+				// Get the angle of the branch and its perpendicular angle
+				double branchAngle = Reef.getBranchAngle(branchIndex);
 
-			System.out.println("PerpAngle" + Units.radiansToDegrees(scoringAngle));
+				double scoringAngle = -MathUtilities.AngleUtilities.getPerpendicularAngle(branchAngle).in(Radians);
 
-			Pose3d endEffectorPose = new Pose3d(reefBranchPose.getX(), 
-												reefBranchPose.getY(),
-												Units.feetToMeters(Reef.heightsList[branchIndex]),
-												new Rotation3d(
-													0, scoringAngle,
-								reefBranchPose.getRotation().getRadians()));
-			// Offset the target end effector pose
-			// This seems to make scoring more relable
-			endEffectorPose = endEffectorPose.plus(new Transform3d(Units.feetToMeters(Constants.ReefConstants.SCORING_OFFSET), 0, 0.2, new Rotation3d()));
+				Pose3d endEffectorPose = new Pose3d(reefBranchPose.getX(), 
+													reefBranchPose.getY(),
+													Units.feetToMeters(Reef.heightsList[branchIndex]),
+													new Rotation3d(
+														0, 
+														scoringAngle,
+														reefBranchPose.getRotation().getRadians()
+														));
+				// Offset the target end effector pose
+				// This seems to make scoring more relable
+				endEffectorPose = endEffectorPose.plus(new Transform3d(Units.feetToMeters(Constants.ReefConstants.SCORING_OFFSET), 0, -0.01, new Rotation3d()));
 
-			SmartDashboard.putNumberArray("Pathfinding/TEST", MathUtilities.PoseUtilities.convertPose3dToNumbers(endEffectorPose));
+				SmartDashboard.putNumberArray("Pathfinding/TEST", MathUtilities.PoseUtilities.convertPose3dToNumbers(endEffectorPose));
 
-			// Calculates the minimum distance that the robot can be from the reef specificly from the shouler pivots POV
-			double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
-			- Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
+				// Calculates the minimum distance that the robot can be from the reef specificly from the shouler pivots POV
+				double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2) + Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_FOWARD_OFFSET) + 0.01;
+				// - Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
-			FullRobotTargetState fullRobotTargetState = RobotContainer.pathfindingSubsystem
-					.computeStateForEndEffectorPose(endEffectorPose, minimumRobotDistance);
+				FullRobotTargetState fullRobotTargetState = RobotContainer.pathfindingSubsystem
+						.computeStateForEndEffectorPose(endEffectorPose, minimumRobotDistance);
 
-			// The pose to go to that is a bit away so the arm and elevator have time to move into position
-			Pose2d intermediatePose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
+				// The pose to go to that is a bit away so the arm and elevator have time to move into position
+				Pose2d intermediatePose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
 
-			// The pose to go to when the robot is pulling away from the branch 
-			Pose2d pullBackPose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.2, 0, Rotation2d.fromDegrees(0)));
+				// The pose to go to when the robot is pulling away from the branch 
+				Pose2d pullBackPose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.2, 0, Rotation2d.fromDegrees(0)));
 
-			if (fullRobotTargetState.targetStatus() != PathfindingSubsystem.StateStatus.INVALID) {
+				if (fullRobotTargetState.targetStatus() != PathfindingSubsystem.StateStatus.INVALID) {
 
-				this.commands.addCommands(
-						new MoveToPoseCommand(intermediatePose, false)
-								.withDeadline(new ParallelCommandGroup(
-										new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()),
-										new SetArmConfigurationCommand(
-											fullRobotTargetState.shoulderAngle() + Constants.ReefConstants.LIFT_ANGLE, 90.0,
-												true))),
-						new ParallelCommandGroup(new MoveToPoseCommand(fullRobotTargetState.chassisPose(), true)),
-						new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 90.0, true)));
+					this.commands.addCommands(
+							new MoveToPoseCommand(intermediatePose, false)
+									.withDeadline(new ParallelCommandGroup(
+											new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()),
+											new SetArmConfigurationCommand(
+												fullRobotTargetState.shoulderAngle() + Constants.ReefConstants.LIFT_ANGLE, 90.0,
+													true))),
+							new ParallelCommandGroup(new MoveToPoseCommand(fullRobotTargetState.chassisPose(), true)),
+							new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 90.0, true)));
 
-				if (branchIndex != 0) {
-					this.commands.addCommands(new ParallelCommandGroup(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3),
-					new MoveToPoseCommand(pullBackPose, true).withTimeout(5)));
+					if (branchIndex != 0) {
+						this.commands.addCommands(new ParallelCommandGroup(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3),
+						new MoveToPoseCommand(pullBackPose, true).withTimeout(5)));
+					} else {
+						this.commands.addCommands(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3));
+					}
 				} else {
-					this.commands.addCommands(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3));
+					System.err.println("Nan value target detected in auto score");
+					RobotContainer.driverController.setRumbleBlinkCommand(RumbleType.kBothRumble, 1, 0.15, 0.1, 2)
+							.schedule();
 				}
-			} else {
-				System.err.println("Nan value target detected in auto score");
-				RobotContainer.driverController.setRumbleBlinkCommand(RumbleType.kBothRumble, 1, 0.15, 0.1, 2)
-						.schedule();
-			}
 			
+			} else {
+				Pose2d newRobotPose = tagPose.plus(new Transform2d(
+						-(Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
+								- Units.feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_OFFSET),
+						0, Rotation2d.fromDegrees(0)));
+
+				Pose2d intermediatePose = newRobotPose.plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
+
+				this.commands
+						.addCommands(new MoveToPoseCommand(intermediatePose, false).withDeadline(
+								new ParallelCommandGroup(
+										new SetElevatorHeightCommand(Units
+												.feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_HEIGHT)),
+										new SetArmConfigurationCommand(
+												Constants.ReefConstants.FieldConstants.L1.SCORE_ANGLE, 0.0, true))),
+								new ParallelCommandGroup(
+										new MoveToPoseCommand(newRobotPose, true).withTimeout(5)),
+								new ParallelCommandGroup(RobotContainer.intakeSubsystem
+										.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3)));
+			}
 
 		} else {
 			System.out.println("No close reef tag");
@@ -137,5 +160,3 @@ public class AutoScoreCoralCommand extends Command {
 		RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.05).schedule();
 	}
 }
-
-// SPEED ME UP ALSO MAKE MORE RELIABLE. NEED TO FINDOUT WHY IT STOP THINK IT CAUSE MOVE TO POSE BUT NEED TO MAKE MOVE TO POSE BETTER

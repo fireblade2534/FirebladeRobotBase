@@ -10,14 +10,12 @@ import frc.robot.commands.pathfinding.MoveToPoseCommand;
 import frc.robot.subsystems.PathfindingSubsystem.FullRobotTargetState;
 
 public class TESTAUTOANGLE extends Command{
-    private final Translation3d rotatePose;
+    private Translation3d rotatePose;
     private double pitchAngle = 70;
-    private final double yawAngle;
+    private double yawAngle;
     private MoveToPoseCommand pathCommand;
 
     public TESTAUTOANGLE() {
-        rotatePose = new Translation3d(RobotContainer.swerveSubsystem.getPose().getX(), RobotContainer.swerveSubsystem.getPose().getY(), 1);
-        yawAngle = RobotContainer.swerveSubsystem.getPose().getRotation().getRadians();
 
         addRequirements(RobotContainer.armSubsystem, RobotContainer.elevatorSubsystem);
     }
@@ -26,6 +24,8 @@ public class TESTAUTOANGLE extends Command{
     public void initialize() {
         pathCommand = new MoveToPoseCommand(RobotContainer.swerveSubsystem.getPose(), false);
         pathCommand.initialize();
+        rotatePose = new Translation3d(RobotContainer.swerveSubsystem.getPose().getX(), RobotContainer.swerveSubsystem.getPose().getY(), 1);
+        yawAngle = RobotContainer.swerveSubsystem.getPose().getRotation().getRadians();
     }
 
     @Override

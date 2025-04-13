@@ -25,7 +25,7 @@ public class Reef {
         return tagPose;
     }
 
-    public static Pose2d getReefIDPose(int tagID, boolean facingTag) {
+    public static Pose2d getReefTagPose(int tagID, boolean facingTag) {
         Pose2d tagPose = Constants.APRIL_TAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d();
         if (facingTag) {
             tagPose = tagPose.transformBy(new Transform2d(0, 0, new Rotation2d(Units.degreesToRadians(180))));
@@ -96,8 +96,6 @@ public class Reef {
 
     public static double getBranchAngle(int branchLevel) {
         switch (branchLevel) {
-            case 0:
-                return Constants.ReefConstants.FieldConstants.L1.PERPENDICULAR_ANGLE;
             case 1:
                 return Constants.ReefConstants.FieldConstants.L2.BRANCH_ANGLE;
             case 2:

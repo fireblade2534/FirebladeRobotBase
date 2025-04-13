@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -70,6 +71,12 @@ public class MathUtilities {
         public static Rotation2d rotationToTarget(Translation2d source, Translation2d target) {
             double targetRadians = Math.atan2(target.getY() - source.getY(), target.getX() - source.getX());
             return new Rotation2d(targetRadians);
+        }
+
+        public static Translation2d interpolate2d(Translation2d source, Translation2d target, double time) {
+            Translation2d difference = target.minus(source);
+            Translation2d outputDifference = difference.times(MathUtil.clamp(time, 0, 1));
+            return source.plus(outputDifference);
         }
 
         public static double[] convertPose3dToNumbers(Pose3d pose) {

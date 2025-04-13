@@ -239,6 +239,8 @@ public final class Constants {
     public static final double TRANSLATION_ACCEPTABLE_ERROR = 0.1; // Feet
     public static final double ROTATION_ACCEPTABLE_ERROR = 2; // Degrees
 
+    public static final double MAX_POSE_MOVE_VELOCITY = 9; // Feet/Second
+
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
     public static final double ANGLE_JOYSTICK_RADIUS_DEADBAND = 0.5;
@@ -289,12 +291,8 @@ public final class Constants {
   public static class VisionConstants {
     public static final Matrix<N3, N1> VISION_SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 0.6); // The standard deviations of our vision estimated poses, which affect correction rate
     public static final Matrix<N3, N1> VISION_MULTI_TAG_STD_DEVS = VecBuilder.fill(0.3, 0.3, 0.3); // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 60; // The higher this is the less that far targets increase the std devs
-    public static final double TARGET_TRANSLATION_SPEED_STD_DEVS_DIVISOR = 70; // The higher this is the less that the robot moving increases the std devs
-    public static final double TARGET_ROTATIONAL_SPEED_STD_DEVS_DIVISOR = 70; // The higher this is the less that the robot turning increases the std devs
-    public static final double TARGET_COUNT_STD_DEVS_DIVISOR = 0.2; // The higher this is the less that a low number of targets increases the std devs
-    public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 0.1; // The higher this is the less that a high average ambiguty increases the std devs
-    public static final double OVERALL_MULTIPLIER = 1;
+    public static final double TARGET_DISTANCE_STD_DEVS_DIVISOR = 30; // The higher this is the less that far targets increase the std devs
+    public static final double TARGET_AMBIGUITY_STD_DEVS_DIVISOR = 5; // The higher this is the less that a high average ambiguty increases the std devs
     public static final double CUTOFF = 2.5;
 
     public static class Limelight_4 {
@@ -327,8 +325,11 @@ public final class Constants {
           public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
 
           public static class L1 {
-            public static final double MAX_HEIGHT = 1.7; // Feet
-            public static final double PERPENDICULAR_ANGLE = 70; // Degrees
+            public static final double MAX_HEIGHT = 1.50919; // Feet
+            public static final double SCORE_HEIGHT = 3.3; // Feet
+            public static final double SCORE_ANGLE = -30; // Degrees
+            public static final double SCORE_OFFSET = 0.25; // Feet
+
           }
 
           public static class L2 {
@@ -354,18 +355,22 @@ public final class Constants {
           public static final Transform2d alignOffset = new Transform2d(new Translation2d(-0.6, 0), new Rotation2d(Units.degreesToRadians(0)));
       }
 
-      public static final double LIFT_ANGLE = 30;
+      public static final double LIFT_ANGLE = 25;
       public static final double CLOSE_DISTANCE = 13; // Feet
       public static final double SCORING_OFFSET = 0.07; // Feet
   }
 
   public static class CoralStationConstants {
-    public static final int[] BLUE_ALLIANCE_REEF_TAG_IDS = {13, 12}; // Left, Right
-    public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {1, 2}; // Left, Right
+    public static class FieldConstants {
+      public static final int[] BLUE_ALLIANCE_CORAL_STATION_TAG_IDS = {13, 12}; // Left, Right
+      public static final int[] RED_ALLIANCE_CORAL_STATION_TAG_IDS = {1, 2}; // Left, Right
+    }
 
-    public static final double RIGHT_OFFSET = 0; // Feet (For the right alliance coral station)
-    public static final double FOWARD_OFFSET = 0; // Feet
-    public static final double VERTICAL_OFFSET = 0; // Feet
+    public static final double RIGHT_OFFSET = -2; // Feet (For the right alliance coral station)
+    public static final double FOWARD_OFFSET = -0.1; // Feet
+    public static final double VERTICAL_OFFSET = 3.250015; // Feet (From the carpet)
+    public static final double PICK_UP_ANGLE = 45; // Degrees
+    public static final double PATHFIND_DISTANCE = 3; // Feet
   }
 
   public static class ElevatorConstants {

@@ -25,6 +25,7 @@ import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.TESTAUTOANGLE;
+import frc.robot.commands.coral_station.AutoPickupFromCoralStation;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.commands.reef.AutoScoreCoralCommand;
 import frc.robot.commands.setpoints.CoralStationPickupConfigurationCommand;
@@ -159,9 +160,9 @@ public class RobotContainer {
     driverController.button(9).onTrue(new GroundPickupConfigurationCommand());
 
     /*
-     * Coral station pickup setpoints
+     * Auto coral station pickup setpoints
      */
-    driverController.button(10).onTrue(new CoralStationPickupConfigurationCommand());
+    driverController.button(10).onTrue(new AutoPickupFromCoralStation(true));
 
     /*
      * Climb commands

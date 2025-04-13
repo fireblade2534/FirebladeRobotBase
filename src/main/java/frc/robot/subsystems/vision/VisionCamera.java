@@ -38,7 +38,7 @@ public class VisionCamera {
     private Transform3d cameraOffset;
     private PhotonPoseEstimator photonPoseEstimator;
     private Matrix<N3, N1> currentStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-    private Optional<ConstrainedSolvepnpParams> solveParams = Optional.of(new ConstrainedSolvepnpParams(true,0.5));
+    private Optional<ConstrainedSolvepnpParams> solveParams = Optional.of(new ConstrainedSolvepnpParams(true, 0.5));
     // Camera properties
     private double effectiveRange;
 
@@ -57,8 +57,8 @@ public class VisionCamera {
         this.effectiveRange = effectiveRange;
 
         photonPoseEstimator = new PhotonPoseEstimator(Constants.APRIL_TAG_FIELD_LAYOUT,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
-         photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, this.cameraOffset);
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
 
         if (Robot.isSimulation()) {
             SimCameraProperties cameraProperties = new SimCameraProperties();
@@ -81,7 +81,6 @@ public class VisionCamera {
     public void updateVision() {
         Optional<EstimatedRobotPose> robotEstimate = Optional.empty();
 
-
         List<PhotonPipelineResult> photonResults = camera.getAllUnreadResults();
 
         if (photonResults.isEmpty()) {
@@ -91,10 +90,10 @@ public class VisionCamera {
         double latestTiemstamp = -1;
         EstimatedRobotPose latestPose = null;
 
-        photonPoseEstimator.addHeadingData(Timer.getFPGATimestamp(), RobotContainer.swerveSubsystem.swerveDrive.getGyroRotation3d());
+        photonPoseEstimator.addHeadingData(Timer.getFPGATimestamp(),
+                RobotContainer.swerveSubsystem.swerveDrive.getGyroRotation3d());
 
         for (PhotonPipelineResult result : photonResults) {
-            
 
             robotEstimate = photonPoseEstimator.update(result, Optional.empty(), Optional.empty(), solveParams);
 
@@ -151,7 +150,9 @@ public class VisionCamera {
         if (validTargets == 1 && averageDistance > effectiveRange) {
             temporaryStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         } else {
-            temporaryStdDevs = temporaryStdDevs.times(1 + (Math.pow(averageDistance, 2) / 30));
+            temporaryStdDevs = temporaryStdDevs.times(
+                    1 + (Math.pow(averageDistance, 2) / Constants.VisionConstants.TARGET_DISTANCE_STD_DEVS_DIVISOR)
+                            + (averageAmbiguity / Constants.VisionConstants.TARGET_AMBIGUITY_STD_DEVS_DIVISOR));
         }
 
         currentStdDevs = temporaryStdDevs;

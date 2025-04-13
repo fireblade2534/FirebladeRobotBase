@@ -14,14 +14,15 @@ public class PathfindToPoseCommand extends Command {
     public PathfindToPoseCommand(Pose2d goalPose, double goalEndSpeed) {
         this.goalPose = goalPose;
         this.goalEndSpeed = goalEndSpeed;
+        addRequirements(RobotContainer.swerveSubsystem);
     }
 
     @Override
     public void initialize() {
         System.out.println("Pathfinding to pose: " + this.goalPose.toString());
 
-        pathfindCommand = AutoBuilder.pathfindToPose(goalPose, RobotContainer.pathfindingSubsystem.getPathConstraints(), goalEndSpeed);
-
+        pathfindCommand = AutoBuilder.pathfindToPose(this.goalPose, RobotContainer.pathfindingSubsystem.getPathConstraints(), goalEndSpeed);
+        RobotContainer.smartDashboardSubsystem.currentGoalPose = this.goalPose;
         pathfindCommand.initialize();
     }
 

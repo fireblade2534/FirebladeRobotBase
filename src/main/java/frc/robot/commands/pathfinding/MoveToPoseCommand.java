@@ -2,6 +2,7 @@ package frc.robot.commands.pathfinding;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +25,8 @@ public class MoveToPoseCommand extends Command {
 
     private final boolean endAtPose;
 
+	private final double maxVelocity = Units.feetToMeters(Constants.SwerveConstants.MAX_POSE_MOVE_VELOCITY);
+
     /**
      * 
      * @param goalPose The pose to move to
@@ -41,6 +44,7 @@ public class MoveToPoseCommand extends Command {
         this.headingController = new PIDController(Constants.SwerveConstants.HeadingPID.P,
                 Constants.SwerveConstants.HeadingPID.I, Constants.SwerveConstants.HeadingPID.D);
 
+				
         this.endAtPose = endAtPose;
 
         addRequirements(RobotContainer.swerveSubsystem);
@@ -76,13 +80,14 @@ public class MoveToPoseCommand extends Command {
 		this.translationXController.setSetpoint(this.goalPose.getX());
         this.translationYController.setSetpoint(this.goalPose.getY());
 		this.headingController.setSetpoint(this.goalPose.getRotation().getRadians());
+		RobotContainer.smartDashboardSubsystem.currentGoalPose = this.goalPose;
 	}
 
     @Override
     public void execute() {
         Pose2d robotPose = RobotContainer.swerveSubsystem.getPose();
-        double translationX = this.translationXController.calculate(robotPose.getX());
-        double translationY = this.translationYController.calculate(robotPose.getY());
+        double translationX = MathUtil.clamp(this.translationXController.calculate(robotPose.getX()), -maxVelocity, maxVelocity);
+        double translationY = MathUtil.clamp(this.translationYController.calculate(robotPose.getY()), -maxVelocity, maxVelocity);
 
         double heading = this.headingController
                 .calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
@@ -97,7 +102,8 @@ public class MoveToPoseCommand extends Command {
             return false;
         }
 
-        return this.translationXController.atSetpoint() && this.translationYController.atSetpoint()
+        return this.translationXController.atSetpoint()
+                && this.translationYController.atSetpoint()
                 && this.headingController.atSetpoint()
                 && Math.abs(RobotContainer.swerveSubsystem.getRobotVelocity().omegaRadiansPerSecond) < Units
                         .degreesToRadians(Constants.SwerveConstants.ROTATION_ZERO_THRESHOLD)

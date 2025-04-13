@@ -10,9 +10,9 @@ public class CoralStationPickupConfigurationCommand extends ParallelCommandGroup
     
     public CoralStationPickupConfigurationCommand() {
         addCommands(
-            new SetArmConfigurationCommand(Constants.SetpointConstants.GroundIntake.SHOULDER_ANGLE, Constants.SetpointConstants.GroundIntake.WRIST_ANGLE),
+            new SetArmConfigurationCommand(Constants.SetpointConstants.CoralStationIntake.SHOULDER_ANGLE, Constants.SetpointConstants.CoralStationIntake.WRIST_ANGLE),
 
-            new SetElevatorHeightCommand(Units.feetToMeters(Constants.SetpointConstants.GroundIntake.ELEVATOR_GROUND_HEIGHT))
+            new SetElevatorHeightCommand(Units.feetToMeters(Constants.SetpointConstants.CoralStationIntake.ELEVATOR_GROUND_HEIGHT))
         );
     }
 }

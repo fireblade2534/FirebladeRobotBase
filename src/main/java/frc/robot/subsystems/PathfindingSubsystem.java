@@ -111,64 +111,87 @@ public class PathfindingSubsystem extends SubsystemBase {
     }
 
     public FullRobotTargetState computeStateForEndEffectorPose(Pose3d endEffectorPose, double minimumRobotDistance) {
-        double scoringAngle = endEffectorPose.getRotation().getY();
+        double targetAngle = endEffectorPose.getRotation().getY();
+		StateStatus targetStatus = StateStatus.PERFECT;
+
+		double armLength = Units.feetToMeters(Constants.ArmConstants.LENGTH);
 
         // Get the branch translation
         Translation2d branchTranslation = endEffectorPose.getTranslation().toTranslation2d();
 
         // Calculate the horizontal distance between the robot and the arm when at the
-        // angle needed to score
-        double horizontalRobotArmDistance = (Math.cos(scoringAngle)
-                * Units.feetToMeters(Constants.ArmConstants.LENGTH))
+        // angle needed to reach the target and account for the offset of the shoulder joint relative to the center of the robot
+        double horizontalRobotArmDistance = (Math.cos(targetAngle)
+                * armLength)
                 + Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
-        // Calculate the verticle offset between the robot and the arm when at the
-        // angle needed to score
-        double verticalRobotArmDistance = Math.sin(scoringAngle)
-                * Units.feetToMeters(Constants.ArmConstants.LENGTH);
+		// For some locations the size of the robots swerve base prevents it from getting close enough to achive an optimal angle
+		if (minimumRobotDistance > horizontalRobotArmDistance) {
+			targetStatus = StateStatus.CLOSE;
 
+			System.out.println("Invalid horizontal distance for auto score trying backup method 1");
+			
+			// The minimum distance does not accout for the offset of the shoulder joint so it is subtracted to get the minimum distance bettween the shoulder and the target
+			horizontalRobotArmDistance = minimumRobotDistance - Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
+
+			// Compute the angle to reach the point while taking into account the minimum distance
+			double adjustedTargetAngle = Math.acos(horizontalRobotArmDistance / armLength);
+
+			if (targetAngle < 0) {
+				adjustedTargetAngle = -adjustedTargetAngle;
+			}
+			targetAngle = adjustedTargetAngle;
+		}
+
+		// Calculate the vertical offset between the robot and the arm when at the
+        // angle needed to reach the target
+        double verticalRobotArmDistance = Math.sin(targetAngle)
+                * armLength;
+
+        // Using that verical offset calculate the height that the elevator has to be at
         double elevatorTargetHeight = endEffectorPose.getZ()
                 - verticalRobotArmDistance;
 
-        StateStatus targetStatus = StateStatus.PERFECT;
-        // For some locations the size of the robots swerve base and the limits on the elevators height prevents it from doing the optimal placing angles
-        if (!RobotContainer.elevatorSubsystem.checkGlobalHeightPossible(elevatorTargetHeight)
-                || minimumRobotDistance > horizontalRobotArmDistance) {
+        // For some locations the limits on the elevators height prevent it from achiving an optimal angle
+        if (!RobotContainer.elevatorSubsystem.checkGlobalHeightPossible(elevatorTargetHeight)) {
             targetStatus = StateStatus.CLOSE;
+
+			System.out.println("Invalid elevator height for auto score trying backup method 2");
 
             double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
                     + Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
 
-            System.out.println("Invalid requirements for auto score trying backup requirements");
-
-            double branchPivotOffset = endEffectorPose.getZ()
+			// This asumes that the requested height is not within the elevators range of motion
+			// It subtracts the pivot point offset to get the vertical distance between the lowest bound on the elevator
+			// and the target
+            double targetToPivotOffset = endEffectorPose.getZ()
                     - RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
-            
-            // If the branch is higher then the elevator can go the offset will be higher then max height
+
+            // If the offset is higher then the max height of the elevator the target must be higher then the max height of the elevatora
             // This code changes it so it is now the offset from the max travel of the elevator to the branch
-            if (branchPivotOffset > maxHeight) {
-                branchPivotOffset -= maxHeight;
+            if (targetToPivotOffset > maxHeight) {
+                targetToPivotOffset -= maxHeight;
             }
 
             // Calculates the horizontal distance between the shoulder pivot and the branch
             horizontalRobotArmDistance = Math
-                    .sqrt(Math.pow(Units.feetToMeters(Constants.ArmConstants.LENGTH), 2)
-                            - Math.pow(branchPivotOffset, 2))
+                    .sqrt(Math.pow(armLength, 2)
+                            - Math.pow(targetToPivotOffset, 2))
                     + Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
-            scoringAngle = Math.asin(branchPivotOffset / Units.feetToMeters(Constants.ArmConstants.LENGTH));
+            targetAngle = Math.asin(targetToPivotOffset / armLength);
         }
 
         double offsetDistance = -Math.max(horizontalRobotArmDistance, minimumRobotDistance);
 
         // The pose the robot has to be in to score the coral
         Pose2d newRobotPose = new Pose2d(branchTranslation,
-        Rotation2d.fromDegrees(endEffectorPose.getRotation().getZ())).plus(new Transform2d(offsetDistance, 0, Rotation2d.fromDegrees(0)));
+        Rotation2d.fromRadians(endEffectorPose.getRotation().getZ())).plus(new Transform2d(offsetDistance, 0, Rotation2d.fromDegrees(0)));
 
-        if (Double.isNaN(scoringAngle) || Double.isNaN(elevatorTargetHeight)) {
+        if (Double.isNaN(targetAngle) || Double.isNaN(elevatorTargetHeight)) {
             targetStatus = StateStatus.INVALID;
         }
 
-        return new FullRobotTargetState(newRobotPose, elevatorTargetHeight, Units.radiansToDegrees(scoringAngle), targetStatus);
+        return new FullRobotTargetState(newRobotPose, elevatorTargetHeight, Units.radiansToDegrees(targetAngle), targetStatus);
     }
 }

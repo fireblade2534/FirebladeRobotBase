@@ -31,6 +31,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     public VisionSystemSim visionSim;
 
+    private boolean isSimulation = Robot.isSimulation();
+
     public VisionSubsystem() {
         navx = (AHRS) RobotContainer.swerveSubsystem.swerveDrive.getGyro().getIMU();
 
@@ -105,15 +107,19 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        // Update the vision simulation with the exact robot pose from the drive train
-        // simulation
-        RobotContainer.swerveSubsystem.swerveDrive.getSimulationDriveTrainPose().ifPresent(pose -> {
-            visionSim.update(pose);
-        });
+        
     }
 
 
     public void updateVisionEstimates() {
+        if (isSimulation) {
+            // Update the vision simulation with the exact robot pose from the drive train
+            // simulation
+            RobotContainer.swerveSubsystem.swerveDrive.getSimulationDriveTrainPose().ifPresent(pose -> {
+                visionSim.update(pose);
+            });
+        }
+
         for (var camera : limelightCameras) {
            camera.updateVision();
         }

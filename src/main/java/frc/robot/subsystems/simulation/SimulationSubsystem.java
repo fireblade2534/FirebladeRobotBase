@@ -41,14 +41,16 @@ public class SimulationSubsystem extends SubsystemBase {
 
     private void spawnCorals() {
         
-        for (int i = 0; i < Constants.SimulationConstants.StartingSpawnCoral.SPAWN_COUNT; i++) {
+        if (Constants.SimulationConstants.StartingSpawnCoral.ENABLED) {
+            for (int i = 0; i < Constants.SimulationConstants.StartingSpawnCoral.SPAWN_COUNT; i++) {
 
-            Pose2d spawnPose = new Pose2d(new Translation2d(Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_X), Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_Y)), Rotation2d.fromDegrees(Math.random() * 360));
+                Pose2d spawnPose = new Pose2d(new Translation2d(Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_X), Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_Y)), Rotation2d.fromDegrees(Math.random() * 360));
 
-            spawnPose = spawnPose.plus(new Transform2d(Math.random() * Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_RADIUS), 0, new Rotation2d()));
+                spawnPose = spawnPose.plus(new Transform2d(Math.random() * Units.feetToMeters(Constants.SimulationConstants.StartingSpawnCoral.SPAWN_RADIUS), 0, new Rotation2d()));
 
-            SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(new  Pose2d(spawnPose.getX(), spawnPose.getY(), Rotation2d.fromDegrees(Math.random() * 360))));
-        } 
+                SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(new  Pose2d(spawnPose.getX(), spawnPose.getY(), Rotation2d.fromDegrees(Math.random() * 360))));
+            }
+        }
     }
 
     public boolean isPickupEnabled() {
