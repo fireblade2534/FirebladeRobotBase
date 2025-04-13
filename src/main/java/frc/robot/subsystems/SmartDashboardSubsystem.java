@@ -36,6 +36,7 @@ public class SmartDashboardSubsystem extends SubsystemBase {
 
         if (Constants.DebugConstants.DEBUG_SIMULATION) {
             SmartDashboard.putBoolean("Simulation/Intake/Enabled", RobotContainer.simulationSubsystem.isPickupEnabled()); 
+            SmartDashboard.putBoolean("Simulation/CoralStation/Inside", RobotContainer.simulationSubsystem.isInsideCoralStation());
         }
 
         if (Constants.DebugConstants.ANIMATE_ROBOT) {

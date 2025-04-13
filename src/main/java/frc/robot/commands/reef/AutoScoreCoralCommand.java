@@ -74,8 +74,6 @@ public class AutoScoreCoralCommand extends Command {
 				// This seems to make scoring more relable
 				endEffectorPose = endEffectorPose.plus(new Transform3d(Units.feetToMeters(Constants.ReefConstants.SCORING_OFFSET), 0, -0.01, new Rotation3d()));
 
-				SmartDashboard.putNumberArray("Pathfinding/TEST", MathUtilities.PoseUtilities.convertPose3dToNumbers(endEffectorPose));
-
 				// Calculates the minimum distance that the robot can be from the reef specificly from the shouler pivots POV
 				double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2) + Units.feetToMeters(Constants.ReefConstants.FieldConstants.BRANCH_FOWARD_OFFSET) + 0.01;
 				// - Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);

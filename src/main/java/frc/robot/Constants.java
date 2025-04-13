@@ -218,9 +218,9 @@ public final class Constants {
     }
 
     public static class TranslationPID {
-      public static final double P = 8;
+      public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.1;
+      public static final double D = 0.2;
     }
 
     public static class HeadingPID {
@@ -239,7 +239,7 @@ public final class Constants {
     public static final double TRANSLATION_ACCEPTABLE_ERROR = 0.1; // Feet
     public static final double ROTATION_ACCEPTABLE_ERROR = 2; // Degrees
 
-    public static final double MAX_POSE_MOVE_VELOCITY = 9; // Feet/Second
+    public static final double MAX_POSE_MOVE_VELOCITY = 8; // Feet/Second
 
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
@@ -256,7 +256,7 @@ public final class Constants {
     public static final double HEIGHT_OFF_GROUND = 0.033; // Feet
     public static final double MAX_SPEED = 24; // Feet/Second
     public static final double MAX_ACHIEVABLE_SPEED = 24; // Feet/Second
-    public static final double MAX_ACCELERATION = 7.5; // Feet/Second
+    public static final double MAX_ACCELERATION = 6.5; // Feet/Second
     public static final double MAX_ANGULAR_VELOCITY = 540; // Degrees/Second
     public static final double MAX_ANGULAR_ACCELERATION = 720; // Degrees/Second
     public static final double MOI = 6.883;
@@ -357,7 +357,7 @@ public final class Constants {
 
       public static final double LIFT_ANGLE = 25;
       public static final double CLOSE_DISTANCE = 13; // Feet
-      public static final double SCORING_OFFSET = 0.07; // Feet
+      public static final double SCORING_OFFSET = 0.05; // Feet
   }
 
   public static class CoralStationConstants {
@@ -367,8 +367,8 @@ public final class Constants {
     }
 
     public static final double RIGHT_OFFSET = -2; // Feet (For the right alliance coral station)
-    public static final double FOWARD_OFFSET = -0.1; // Feet
-    public static final double VERTICAL_OFFSET = 3.250015; // Feet (From the carpet)
+    public static final double FOWARD_OFFSET = -0.15; // Feet
+    public static final double VERTICAL_OFFSET = 3.25; // Feet (From the carpet)
     public static final double PICK_UP_ANGLE = 45; // Degrees
     public static final double PATHFIND_DISTANCE = 3; // Feet
   }
@@ -485,9 +485,15 @@ public final class Constants {
       public static final double SPAWN_Y = 5; // Feet
       public static final double SPAWN_RADIUS = 3; // Feet
     }
-    
+
     public static class CoralStations {
-      public static boolean ENABLED = true;
+      public static final boolean ENABLED = true;
+      public static final double FOWARD_OFFSET = -0.4; // Feet
+      public static final double VERTICAL_OFFSET = -1.49; // Feet
+      public static final double WIDTH = 6.354; // Feet
+      public static final double LENGTH = 1.5; // Feet
+      public static final double HEIGHT = 0.8; // Feet
+      public static final double YAW = 45; // Degrees
     }
 
     public static final boolean ASSUME_START_WITH_CORAL = true;

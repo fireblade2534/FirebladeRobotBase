@@ -86,14 +86,14 @@ public class MoveToPoseCommand extends Command {
     @Override
     public void execute() {
         Pose2d robotPose = RobotContainer.swerveSubsystem.getPose();
-        double translationX = MathUtil.clamp(this.translationXController.calculate(robotPose.getX()), -maxVelocity, maxVelocity);
-        double translationY = MathUtil.clamp(this.translationYController.calculate(robotPose.getY()), -maxVelocity, maxVelocity);
+        double translationX = MathUtil.clamp(this.translationXController.calculate(robotPose.getX()) / 1.5, -maxVelocity, maxVelocity);
+        double translationY = MathUtil.clamp(this.translationYController.calculate(robotPose.getY()) / 1.5, -maxVelocity, maxVelocity);
 
         double heading = this.headingController
                 .calculate(RobotContainer.swerveSubsystem.swerveDrive.getOdometryHeading().getRadians());
 
         RobotContainer.swerveSubsystem.swerveDrive
-                .driveFieldOriented(new ChassisSpeeds(translationX / 1.5, translationY / 1.5, heading / 1.5));
+                .driveFieldOriented(new ChassisSpeeds(translationX, translationY, heading / 1.5));
     }
 
     @Override

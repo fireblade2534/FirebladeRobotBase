@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.SetArmConfigurationCommand;
+import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.pathfinding.MoveToPoseCommand;
 import frc.robot.commands.pathfinding.PathfindToPoseCommand;
 import frc.robot.subsystems.PathfindingSubsystem.FullRobotTargetState;
@@ -54,8 +55,6 @@ public class AutoPickupFromCoralStation extends Command {
                             Units.degreesToRadians(Constants.CoralStationConstants.PICK_UP_ANGLE),
                             coralStationPose.getRotation().getRadians()));
 
-            SmartDashboard.putNumberArray("Pathfinding/TEST", MathUtilities.PoseUtilities.convertPose3dToNumbers(endEffectorPose));
-
             // Calculates the minimum distance that the robot can be from the coral station specificly from the shouler pivots POV
             double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2);
 
@@ -72,8 +71,8 @@ public class AutoPickupFromCoralStation extends Command {
 
             Pose2d intermediatePose = new Pose2d(intermediateTranslation, Rotation2d.fromRadians(endEffectorPose.getRotation().getZ()));
 
-            this.commands.addCommands(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 0.0)
-                    .withDeadline(new PathfindToPoseCommand(intermediatePose, 0.5)),
+            this.commands.addCommands(new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 0.0), new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()))
+                    .withDeadline(new PathfindToPoseCommand(intermediatePose, 0.1)),
                     new MoveToPoseCommand(fullRobotTargetState.chassisPose(), false).withDeadline(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.INTAKE_SPEED, true, 10)) );
 
         } else {
