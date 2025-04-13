@@ -220,7 +220,7 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.3;
+      public static final double D = 0.1;
     }
 
     public static class HeadingPID {
@@ -239,7 +239,7 @@ public final class Constants {
     public static final double TRANSLATION_ACCEPTABLE_ERROR = 0.1; // Feet
     public static final double ROTATION_ACCEPTABLE_ERROR = 2; // Degrees
 
-    public static final double MAX_POSE_MOVE_VELOCITY = 8; // Feet/Second
+    public static final double MAX_POSE_MOVE_VELOCITY = 7; // Feet/Second
 
     public static final boolean ENABLE_FEED_FOWARD = true; // Controls if feed foward should be enabled in the auto
                                                            // builder
@@ -370,7 +370,6 @@ public final class Constants {
     public static final double FOWARD_OFFSET = -0.15; // Feet
     public static final double VERTICAL_OFFSET = 3.25; // Feet (From the carpet)
     public static final double PICK_UP_ANGLE = 45; // Degrees
-    public static final double PATHFIND_DISTANCE = 3; // Feet
   }
 
   public static class ElevatorConstants {

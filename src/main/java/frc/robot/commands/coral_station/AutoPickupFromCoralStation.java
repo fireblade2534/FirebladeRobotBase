@@ -63,14 +63,6 @@ public class AutoPickupFromCoralStation extends Command {
             FullRobotTargetState fullRobotTargetState = RobotContainer.pathfindingSubsystem
                     .computeStateForEndEffectorPose(endEffectorPose, minimumRobotDistance);
 
-            double distanceToStation = RobotContainer.swerveSubsystem.getPose().getTranslation()
-                    .getDistance(fullRobotTargetState.chassisPose().getTranslation());
-
-            Translation2d intermediateTranslation = MathUtilities.PoseUtilities.interpolate2d(
-                    fullRobotTargetState.chassisPose().getTranslation(),
-                    RobotContainer.swerveSubsystem.getPose().getTranslation(),
-                    Units.feetToMeters(Constants.CoralStationConstants.PATHFIND_DISTANCE) / distanceToStation); 
-            
             this.commands.addCommands(new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 0.0), new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()))
                     .withDeadline(new PathfindToPoseCommand(fullRobotTargetState.chassisPose(), 0)),
                     new MoveToPoseCommand(fullRobotTargetState.chassisPose(), false).withDeadline(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.INTAKE_SPEED, true, 10)) );
