@@ -220,7 +220,7 @@ public final class Constants {
     public static class TranslationPID {
       public static final double P = 7;
       public static final double I = 0;
-      public static final double D = 0.2;
+      public static final double D = 0.3;
     }
 
     public static class HeadingPID {

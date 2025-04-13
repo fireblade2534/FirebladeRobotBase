@@ -26,6 +26,7 @@ public class TESTAUTOANGLE extends Command{
         pathCommand.initialize();
         rotatePose = new Translation3d(RobotContainer.swerveSubsystem.getPose().getX(), RobotContainer.swerveSubsystem.getPose().getY(), 1);
         yawAngle = RobotContainer.swerveSubsystem.getPose().getRotation().getRadians();
+        pitchAngle = 70;
     }
 
     @Override

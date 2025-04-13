@@ -114,7 +114,7 @@ public class PathfindingSubsystem extends SubsystemBase {
         double targetAngle = endEffectorPose.getRotation().getY();
 		StateStatus targetStatus = StateStatus.PERFECT;
 
-		double armLength = Units.feetToMeters(Constants.ArmConstants.LENGTH);
+		double armLength = Units.feetToMeters(Constants.ArmConstants.LENGTH) + Units.feetToMeters(Constants.ReefConstants.SCORING_OFFSET); 
 
         // Get the branch translation
         Translation2d branchTranslation = endEffectorPose.getTranslation().toTranslation2d();

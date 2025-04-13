@@ -28,6 +28,8 @@ public class AutoPickupFromCoralStation extends Command {
 
     public AutoPickupFromCoralStation(boolean canCancel) {
         this.canCancel = canCancel;
+
+        addRequirements(RobotContainer.armSubsystem, RobotContainer.elevatorSubsystem, RobotContainer.swerveSubsystem, RobotContainer.intakeSubsystem);
     }
 
     @Override
@@ -67,12 +69,10 @@ public class AutoPickupFromCoralStation extends Command {
             Translation2d intermediateTranslation = MathUtilities.PoseUtilities.interpolate2d(
                     fullRobotTargetState.chassisPose().getTranslation(),
                     RobotContainer.swerveSubsystem.getPose().getTranslation(),
-                    Units.feetToMeters(Constants.CoralStationConstants.PATHFIND_DISTANCE) / distanceToStation);
-
-            Pose2d intermediatePose = new Pose2d(intermediateTranslation, Rotation2d.fromRadians(endEffectorPose.getRotation().getZ()));
-
+                    Units.feetToMeters(Constants.CoralStationConstants.PATHFIND_DISTANCE) / distanceToStation); 
+            
             this.commands.addCommands(new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 0.0), new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()))
-                    .withDeadline(new PathfindToPoseCommand(intermediatePose, 0.1)),
+                    .withDeadline(new PathfindToPoseCommand(fullRobotTargetState.chassisPose(), 0)),
                     new MoveToPoseCommand(fullRobotTargetState.chassisPose(), false).withDeadline(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.INTAKE_SPEED, true, 10)) );
 
         } else {
