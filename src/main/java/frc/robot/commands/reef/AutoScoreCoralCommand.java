@@ -1,13 +1,18 @@
 package frc.robot.commands.reef;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -16,6 +21,8 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.SetArmConfigurationCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.pathfinding.MoveToPoseCommand;
+import frc.robot.subsystems.PathfindingSubsystem;
+import frc.robot.subsystems.PathfindingSubsystem.FullRobotTargetState;
 import frc.robot.utilities.MathUtilities;
 import frc.robot.utilities.Reef;
 
@@ -45,114 +52,64 @@ public class AutoScoreCoralCommand extends Command {
 
 			Pose2d tagPose = Reef.getReefIDPose(closestTagID, true);
 
-			if (branchIndex != 0) {
-				Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, right);
+			Pose2d reefBranchPose = Reef.getBranchTopPose(tagPose, right);
 
-				// Get the angle of the branch and its perpendicular angle
-				double branchAngle = Reef.getBranchAngle(branchIndex);
-				double scoringAngle = -MathUtilities.AngleUtilities.getPerpendicularAngle(branchAngle).in(Degrees);
+			// Get the angle of the branch and its perpendicular angle
+			double branchAngle = Reef.getBranchAngle(branchIndex);
 
-				// Get the branch translation
-				Translation2d branchTranslation = reefBranchPose.getTranslation();
+			double scoringAngle = -MathUtilities.AngleUtilities.getPerpendicularAngle(branchAngle).in(Radians);
 
-				// Calculate the horizontal distance between the robot and the arm when at the
-				// angle needed to score
-				double horizontalRobotArmDistance = (Math.cos(Units.degreesToRadians(scoringAngle))
-						* Units.feetToMeters(Constants.ArmConstants.LENGTH + Constants.ReefConstants.SCORING_OFFSET))
-						+ Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
+			System.out.println("PerpAngle" + Units.radiansToDegrees(scoringAngle));
 
-				// Calculate the verticle offset between the robot and the arm when at the
-				// angle needed to score
-				double verticalRobotArmDistance = Math.sin(Units.degreesToRadians(scoringAngle))
-						* Units.feetToMeters(Constants.ArmConstants.LENGTH);
+			Pose3d endEffectorPose = new Pose3d(reefBranchPose.getX(), 
+												reefBranchPose.getY(),
+												Units.feetToMeters(Reef.heightsList[branchIndex]),
+												new Rotation3d(
+													0, scoringAngle,
+								reefBranchPose.getRotation().getRadians()));
+			// Offset the target end effector pose
+			// This seems to make scoring more relable
+			endEffectorPose = endEffectorPose.plus(new Transform3d(Units.feetToMeters(Constants.ReefConstants.SCORING_OFFSET), 0, 0.2, new Rotation3d()));
 
-				double elevatorTargetHeight = Units.feetToMeters(Reef.heightsList[branchIndex])
-						- verticalRobotArmDistance;
+			SmartDashboard.putNumberArray("Pathfinding/TEST", MathUtilities.PoseUtilities.convertPose3dToNumbers(endEffectorPose));
 
-				// Calculates the minium distance that the robot can be from the reef specificly from the shouler pivots POV
-				double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
-						- Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
+			// Calculates the minimum distance that the robot can be from the reef specificly from the shouler pivots POV
+			double minimumRobotDistance = (Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
+			- Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
 
-				
-				// For some locations the size of the robots swerve base and the limits on the elevators height prevents it from doing the optimal placing angles
-				if (!RobotContainer.elevatorSubsystem.checkGlobalHeightPossible(elevatorTargetHeight)
-						|| minimumRobotDistance > horizontalRobotArmDistance) {
+			FullRobotTargetState fullRobotTargetState = RobotContainer.pathfindingSubsystem
+					.computeStateForEndEffectorPose(endEffectorPose, minimumRobotDistance);
 
-					double maxHeight = Units.feetToMeters(Constants.ElevatorConstants.Stage1.HARD_MAX_HEIGHT)
-							+ Units.feetToMeters(Constants.ElevatorConstants.Stage2.HARD_MAX_HEIGHT);
+			// The pose to go to that is a bit away so the arm and elevator have time to move into position
+			Pose2d intermediatePose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
 
-					System.out.println("Invalid requirements for auto score trying backup requirements");
+			// The pose to go to when the robot is pulling away from the branch 
+			Pose2d pullBackPose = fullRobotTargetState.chassisPose().plus(new Transform2d(-0.2, 0, Rotation2d.fromDegrees(0)));
 
-					double branchPivotOffset = Units.feetToMeters(Reef.heightsList[branchIndex])
-							- RobotContainer.elevatorSubsystem.getPivotPointOffset(true);
-					
-					// If the branch is higher then the arm can go the offset will be higher then max height
-					// This code changes it so it is now the offset from the max travel of the elevator to the branch
-					if (branchPivotOffset > maxHeight) {
-						branchPivotOffset -= maxHeight;
-					}
+			if (fullRobotTargetState.targetStatus() != PathfindingSubsystem.StateStatus.INVALID) {
 
-					// Calculates the horizontal distance between the shoulder pivot and the branch
-					horizontalRobotArmDistance = Math
-							.sqrt(Math.pow(Units.feetToMeters(Constants.ArmConstants.LENGTH + Constants.ReefConstants.SCORING_OFFSET), 2)
-									- Math.pow(branchPivotOffset, 2))
-							+ Units.feetToMeters(Constants.ArmConstants.Shoulder.CENTER_OFFSET_FOWARD);
+				this.commands.addCommands(
+						new MoveToPoseCommand(intermediatePose, false)
+								.withDeadline(new ParallelCommandGroup(
+										new SetElevatorHeightCommand(fullRobotTargetState.elevatorHeight()),
+										new SetArmConfigurationCommand(
+											fullRobotTargetState.shoulderAngle() + Constants.ReefConstants.LIFT_ANGLE, 90.0,
+												true))),
+						new ParallelCommandGroup(new MoveToPoseCommand(fullRobotTargetState.chassisPose(), true)),
+						new ParallelCommandGroup(new SetArmConfigurationCommand(fullRobotTargetState.shoulderAngle(), 90.0, true)));
 
-					scoringAngle = Units.radiansToDegrees(
-							Math.asin(branchPivotOffset / Units.feetToMeters(Constants.ArmConstants.LENGTH)));
-				}
-
-				double offsetDistance = -Math.max(horizontalRobotArmDistance, minimumRobotDistance);
-
-				// The pose the robot has to be in to score the coral
-				Pose2d newRobotPose = new Pose2d(branchTranslation,
-						tagPose.getRotation()).plus(new Transform2d(offsetDistance, 0, Rotation2d.fromDegrees(0)));
-
-				// The pose to go to that is a bit away so the arm and elevator have time to move into position
-				Pose2d intermediatePose = newRobotPose.plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
-
-				// The pose to go to when the robot is pulling away from the branch 
-				Pose2d pullBackPose = newRobotPose.plus(new Transform2d(-0.2, 0, Rotation2d.fromDegrees(0)));
-
-				if (!(Double.isNaN(scoringAngle) || Double.isNaN(elevatorTargetHeight))) {
-
-					this.commands.addCommands(
-							new MoveToPoseCommand(intermediatePose, false)
-									.withDeadline(new ParallelCommandGroup(
-											new SetElevatorHeightCommand(elevatorTargetHeight),
-											new SetArmConfigurationCommand(
-													scoringAngle + Constants.ReefConstants.LIFT_ANGLE, 90.0,
-													true))),
-							new ParallelCommandGroup(new MoveToPoseCommand(newRobotPose, true)),
-							new ParallelCommandGroup(new SetArmConfigurationCommand(scoringAngle, 90.0, true)),
-							new ParallelCommandGroup(RobotContainer.intakeSubsystem
-									.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3),
-									new MoveToPoseCommand(pullBackPose, true).withTimeout(5)));
+				if (branchIndex != 0) {
+					this.commands.addCommands(new ParallelCommandGroup(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3),
+					new MoveToPoseCommand(pullBackPose, true).withTimeout(5)));
 				} else {
-					System.err.println("Nan value target detected in auto score");
-					RobotContainer.driverController.setRumbleBlinkCommand(RumbleType.kBothRumble, 1, 0.15, 0.1, 2)
-							.schedule();
+					this.commands.addCommands(RobotContainer.intakeSubsystem.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3));
 				}
 			} else {
-				Pose2d newRobotPose = tagPose.plus(new Transform2d(
-						-(Units.feetToMeters(Constants.RobotKinematicConstants.LENGTH) / 2)
-								- Units.feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_OFFSET),
-						0, Rotation2d.fromDegrees(0)));
-
-				Pose2d intermediatePose = newRobotPose.plus(new Transform2d(-0.1, 0, Rotation2d.fromDegrees(0)));
-
-				this.commands
-						.addCommands(new MoveToPoseCommand(intermediatePose, false).withDeadline(
-								new ParallelCommandGroup(
-										new SetElevatorHeightCommand(Units
-												.feetToMeters(Constants.ReefConstants.FieldConstants.L1.SCORE_HEIGHT)),
-										new SetArmConfigurationCommand(
-												Constants.ReefConstants.FieldConstants.L1.SCORE_ANGLE, 0.0, true))),
-								new ParallelCommandGroup(
-										new MoveToPoseCommand(newRobotPose, true).withTimeout(5)),
-								new ParallelCommandGroup(RobotContainer.intakeSubsystem
-										.intakeUntil(Constants.DriverConstants.OUTTAKE_SPEED, false, 3)));
+				System.err.println("Nan value target detected in auto score");
+				RobotContainer.driverController.setRumbleBlinkCommand(RumbleType.kBothRumble, 1, 0.15, 0.1, 2)
+						.schedule();
 			}
+			
 
 		} else {
 			System.out.println("No close reef tag");
@@ -180,7 +137,5 @@ public class AutoScoreCoralCommand extends Command {
 		RobotContainer.driverController.setRumbleSecondsCommand(RumbleType.kBothRumble, 0.5, 0.05).schedule();
 	}
 }
-
-
 
 // SPEED ME UP ALSO MAKE MORE RELIABLE. NEED TO FINDOUT WHY IT STOP THINK IT CAUSE MOVE TO POSE BUT NEED TO MAKE MOVE TO POSE BETTER

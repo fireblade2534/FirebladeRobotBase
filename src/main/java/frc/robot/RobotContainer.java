@@ -23,11 +23,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ControlElevatorBothStages;
 import frc.robot.commands.ControlElevatorStage1Command;
 import frc.robot.commands.ControlElevatorStage2Command;
-import frc.robot.commands.GroundPickupConfigurationCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
+import frc.robot.commands.TESTAUTOANGLE;
 import frc.robot.commands.reef.AutoAlignWithReefCommandGroup;
 import frc.robot.commands.reef.AutoScoreCoralCommand;
+import frc.robot.commands.setpoints.CoralStationPickupConfigurationCommand;
+import frc.robot.commands.setpoints.GroundPickupConfigurationCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PathfindingSubsystem;
@@ -47,6 +50,7 @@ public class RobotContainer {
   public static final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   public static final ArmSubsystem armSubsystem = new ArmSubsystem();
   public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  public static final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   public static final PathfindingSubsystem pathfindingSubsystem = new PathfindingSubsystem();
   public static SimulationSubsystem simulationSubsystem;
 
@@ -141,8 +145,8 @@ public class RobotContainer {
     /*
      * Intake coral
      */
-    driverController.leftTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
-    driverController.rightTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
+    driverController.rightTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.INTAKE_SPEED));
+    driverController.leftTrigger(0.25).whileTrue(intakeSubsystem.setIntakeSpeedCommand(Constants.DriverConstants.OUTTAKE_SPEED));
     
     /*
      * Zero gyro
@@ -150,10 +154,21 @@ public class RobotContainer {
     driverController.button(8).onTrue(new InstantCommand(() -> RobotContainer.swerveSubsystem.zeroGyro(), RobotContainer.swerveSubsystem));
 
     /*
-     * Ground pickup setpoints
+     * Ground pickup setpoint
      */
-    driverController.button(7).onTrue(new GroundPickupConfigurationCommand());
+    driverController.button(9).onTrue(new GroundPickupConfigurationCommand());
 
+    /*
+     * Coral station pickup setpoints
+     */
+    driverController.button(10).onTrue(new CoralStationPickupConfigurationCommand());
+
+    /*
+     * Climb commands
+     */
+    //driverController.button(7).whileTrue(RobotContainer.climbSubsystem.climbUp(Constants.DriverConstants.CLIMB_UP_SPEED));
+
+    driverController.button(7).onTrue(new TESTAUTOANGLE());
     /*
      * Default commands
      */

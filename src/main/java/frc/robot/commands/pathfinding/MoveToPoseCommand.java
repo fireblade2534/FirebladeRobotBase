@@ -16,7 +16,7 @@ import frc.robot.RobotContainer;
 import frc.robot.utilities.MathUtilities;
 
 public class MoveToPoseCommand extends Command {
-    private final Pose2d goalPose;
+    private Pose2d goalPose;
 
     private final PIDController translationXController;
     private final PIDController translationYController;
@@ -67,8 +67,16 @@ public class MoveToPoseCommand extends Command {
 
         this.headingController.enableContinuousInput(-Math.PI, Math.PI);
 
+		RobotContainer.smartDashboardSubsystem.currentGoalPose = this.goalPose;
         System.out.println("Moving to pose: " + this.goalPose.toString());
     }
+
+	public void setNewPose(Pose2d newPose) {
+		this.goalPose = newPose;
+		this.translationXController.setSetpoint(this.goalPose.getX());
+        this.translationYController.setSetpoint(this.goalPose.getY());
+		this.headingController.setSetpoint(this.goalPose.getRotation().getRadians());
+	}
 
     @Override
     public void execute() {

@@ -14,10 +14,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.pathfinding.MoveToPoseCommand;
 import frc.robot.subsystems.vision.VisionCamera;
 import frc.robot.utilities.MathUtilities;
 
 public class SmartDashboardSubsystem extends SubsystemBase {
+
+    public Pose2d currentGoalPose = new Pose2d();
+
     public SmartDashboardSubsystem() {
         SmartDashboard.putData(CommandScheduler.getInstance());
         System.out.println("Created SmartDashboardSubsystem");
@@ -60,6 +64,10 @@ public class SmartDashboardSubsystem extends SubsystemBase {
                     SmartDashboard.putNumberArray("PhotonVision/" + camera.getCameraName() + "/Robot Estimated Pose", MathUtilities.PoseUtilities.convertPose3dToNumbers(estimatedRobotPose.estimatedPose));
                 }
             }
+        }
+
+        if (Constants.DebugConstants.DEBUG_PATHFINDING == true) {
+            SmartDashboard.putNumberArray("Pathfinding/GoalPose", MathUtilities.PoseUtilities.convertPose2dToNumbers(this.currentGoalPose) );
         }
         
         if (Constants.DebugConstants.DEBUG_INTAKE == true) {

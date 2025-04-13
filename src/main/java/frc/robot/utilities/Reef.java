@@ -96,6 +96,8 @@ public class Reef {
 
     public static double getBranchAngle(int branchLevel) {
         switch (branchLevel) {
+            case 0:
+                return Constants.ReefConstants.FieldConstants.L1.PERPENDICULAR_ANGLE;
             case 1:
                 return Constants.ReefConstants.FieldConstants.L2.BRANCH_ANGLE;
             case 2:

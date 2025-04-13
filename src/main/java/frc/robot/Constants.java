@@ -279,6 +279,7 @@ public final class Constants {
     public static final double CONTROL_WRIST_SPEED = 60; // Degrees/Second
     public static final double INTAKE_SPEED = -0.9; // Percent
     public static final double OUTTAKE_SPEED = 0.9; // Percent
+    public static final double CLIMB_UP_SPEED = -1; // Percent
 
     public static class Alerts {
       public static final double LOW_BATTERY_VOLTAGE = 11.5; // Volts
@@ -326,10 +327,8 @@ public final class Constants {
           public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {10, 9, 8, 7, 6, 11};
 
           public static class L1 {
-            public static final double MAX_HEIGHT = 1.50919; // Feet
-            public static final double SCORE_HEIGHT = 3.3; // Feet
-            public static final double SCORE_ANGLE = -30; // Degrees
-            public static final double SCORE_OFFSET = 0.25; // Feet
+            public static final double MAX_HEIGHT = 1.7; // Feet
+            public static final double PERPENDICULAR_ANGLE = 70; // Degrees
           }
 
           public static class L2 {
@@ -360,6 +359,15 @@ public final class Constants {
       public static final double SCORING_OFFSET = 0.07; // Feet
   }
 
+  public static class CoralStationConstants {
+    public static final int[] BLUE_ALLIANCE_REEF_TAG_IDS = {13, 12}; // Left, Right
+    public static final int[] RED_ALLIANCE_REEF_TAG_IDS = {1, 2}; // Left, Right
+
+    public static final double RIGHT_OFFSET = 0; // Feet (For the right alliance coral station)
+    public static final double FOWARD_OFFSET = 0; // Feet
+    public static final double VERTICAL_OFFSET = 0; // Feet
+  }
+
   public static class ElevatorConstants {
     public static class Stage1 {
       public static final int ID = 3;
@@ -375,7 +383,7 @@ public final class Constants {
       public static final double MASS = 50; // Pounds
       public static final double DRUM_RADIUS = 0.98110236; // Inches
       public static final double GEAR_RATIO = 18.5714;
-      public static final double HARD_MAX_HEIGHT = 2.05; // Feet
+      public static final double HARD_MAX_HEIGHT = 2.25; // Feet
       public static final double TOLLERANCE = 0.2; // Feet
     }
 
@@ -465,13 +473,18 @@ public final class Constants {
   }
 
   public static class SimulationConstants {
-    public static class SpawnCoral {
-      public static final boolean ENABLED = true;
+    public static class StartingSpawnCoral {
+      public static final boolean ENABLED = false;
       public static final int SPAWN_COUNT = 24;
       public static final double SPAWN_X = 5; // Feet
       public static final double SPAWN_Y = 5; // Feet
       public static final double SPAWN_RADIUS = 3; // Feet
     }
+    
+    public static class CoralStations {
+      public static boolean ENABLED = true;
+    }
+
     public static final boolean ASSUME_START_WITH_CORAL = true;
   }
 
@@ -479,17 +492,24 @@ public final class Constants {
     public static class GroundIntake {
       public static final double ELEVATOR_GROUND_HEIGHT = 0; // Feet
       public static final double WRIST_ANGLE = 0; // Degrees
-      public static final double SHOULDER_ANGLE = -45; // Degrees
+      public static final double SHOULDER_ANGLE = -33; // Degrees
+    }
+    
+    public static class CoralStationIntake {
+      public static final double ELEVATOR_GROUND_HEIGHT = 0; // Feet
+      public static final double WRIST_ANGLE = 0; // Degrees
+      public static final double SHOULDER_ANGLE = 54; // Degrees
     }
   }
 
   public static class DebugConstants {
-    public static final boolean DEBUG_VISION = true;
-    public static final boolean DEBUG_ELEVATOR = true;
-    public static final boolean DEBUG_ARM = true;
-    public static final boolean DEBUG_WRIST = true;
-    public static final boolean DEBUG_INTAKE = true;
-    public static final boolean DEBUG_SIMULATION = true;
-    public static final boolean ANIMATE_ROBOT = true;
+    public static boolean DEBUG_VISION = true;
+    public static boolean DEBUG_ELEVATOR = true;
+    public static boolean DEBUG_ARM = true;
+    public static boolean DEBUG_WRIST = true;
+    public static boolean DEBUG_INTAKE = true;
+    public static boolean DEBUG_SIMULATION = true;
+    public static boolean DEBUG_PATHFINDING = true;
+    public static boolean ANIMATE_ROBOT = true;
   }
 }
